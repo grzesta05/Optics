@@ -4,27 +4,27 @@ import About from "./About";
 import { BrowserRouter } from "react-router-dom";
 
 afterEach(() => {
-  document.body.innerHTML = "";
+	document.body.innerHTML = "";
 });
 
 describe("About", () => {
-  test("renders", () => {
-    render(
-      <BrowserRouter>
-        <About />
-      </BrowserRouter>
-    );
+	test("renders", () => {
+		render(
+			<BrowserRouter>
+				<About/>
+			</BrowserRouter>
+		);
 
-    expect(screen.getByText("About")).toBeDefined();
-  });
+		expect(screen.getByText("About us")).toBeDefined();
+	});
 
-  test("renders link to Home", () => {
-    render(
-      <BrowserRouter>
-        <About />
-      </BrowserRouter>
-    );
+	test("renders link to Home", () => {
+		render(
+			<BrowserRouter>
+				<About/>
+			</BrowserRouter>
+		);
 
-    expect(screen.getByText("Home")).toBeDefined();
-  });
+		expect(screen.getByText("Back")).toBeDefined();
+	});
 });
