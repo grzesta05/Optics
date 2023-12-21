@@ -1,5 +1,4 @@
-import { Container } from "../components/Container.tsx";
-import { MenuLink } from "../components/MenuLink.tsx";
+import { Container, MenuLink } from "@components";
 
 function About() {
   return (
