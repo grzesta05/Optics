@@ -4,27 +4,37 @@ import Home from "./Home";
 import { BrowserRouter } from "react-router-dom";
 
 afterEach(() => {
-  document.body.innerHTML = "";
+	document.body.innerHTML = "";
 });
 
 describe("Home", () => {
-  test("renders", () => {
-    render(
-      <BrowserRouter>
-        <Home />
-      </BrowserRouter>
-    );
+	test("renders", () => {
+		render(
+			<BrowserRouter>
+				<Home/>
+			</BrowserRouter>
+		);
 
-    expect(screen.getByText("Home")).toBeDefined();
-  });
+		expect(screen.getByText("Optics")).toBeDefined();
+	});
 
-  test("renders link to About", () => {
-    render(
-      <BrowserRouter>
-        <Home />
-      </BrowserRouter>
-    );
+	test("renders link to About us", () => {
+		render(
+			<BrowserRouter>
+				<Home/>
+			</BrowserRouter>
+		);
 
-    expect(screen.getByText("About")).toBeDefined();
-  });
+		expect(screen.getByText("About us")).toBeDefined();
+	});
+
+	test("renders link to Start", () => {
+		render(
+			<BrowserRouter>
+				<Home/>
+			</BrowserRouter>
+		);
+
+		expect(screen.getByText("Start")).toBeDefined();
+	});
 });

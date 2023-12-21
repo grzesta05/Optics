@@ -1,0 +1,11 @@
+.container {
+    flex-direction: column;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 3rem;
+    color: #c0caf5;
+    background-color: #1a1b26aa;
+    border-radius: 0.5rem;
+    backdrop-filter: blur(10px);
+}

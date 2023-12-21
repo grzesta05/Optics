@@ -1,13 +1,13 @@
 import { Container } from "../Components/Container.tsx";
 import { MenuLink } from "../Components/MenuLink.tsx";
 
-function About() {
+function Start() {
 	return (
 		<Container>
-			<h1>About us</h1>
+			<h1>Start the app!</h1>
 			<MenuLink href={"/"}>Back</MenuLink>
 		</Container>
 	);
 }
 
-export default About;
+export default Start;
