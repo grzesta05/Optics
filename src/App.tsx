@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import "./styles/global.css";
-import { Home, About } from "./routes";
-import Start from "./routes/Start.tsx";
+import "@styles/global.css";
+import { Home, About } from "@routes";
+import Start from "@routes/Start.tsx";
 
 function App() {
 	return (
