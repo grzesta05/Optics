@@ -1,6 +1,5 @@
 import styles from "./Home.module.css";
-import { MenuLink } from "../Components/MenuLink.tsx";
-import { Container } from "../Components/Container.tsx";
+import { Container, MenuLink } from "@components";
 
 function Home() {
 	const links = {

@@ -1,13 +1,12 @@
-import { Container } from "../Components/Container.tsx";
-import { MenuLink } from "../Components/MenuLink.tsx";
+import { Container, MenuLink } from "@components";
 
 function About() {
-	return (
-		<Container>
-			<h1>About us</h1>
-			<MenuLink href={"/"}>Back</MenuLink>
-		</Container>
-	);
+  return (
+    <Container>
+      <h1>About us</h1>
+      <MenuLink href={"/"}>Back</MenuLink>
+    </Container>
+  );
 }
 
 export default About;

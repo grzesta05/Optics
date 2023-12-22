@@ -10,5 +10,13 @@ export default defineConfig({
   },
   test: {
     environment: "happy-dom",
-  }
+  },
+  resolve: {
+    alias: {
+      "@": "/src",
+      "@routes": "/src/routes",
+      "@components": "/src/Components",
+      "@styles": "/src/styles",
+    },
+  },
 });
