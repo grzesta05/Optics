@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "@styles/global.css";
-import { Home, About, Start } from "@routes";
+import { Home, About, Start } from "@/routes/index";
 
 function App() {
   return (
