@@ -1,4 +1,4 @@
-import styles from "../styles/Home.module.css";
+import styles from "@styles/routes/Home.module.css";
 import { Container, MenuLink } from "@components";
 
 function Home() {

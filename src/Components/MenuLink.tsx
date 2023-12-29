@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { Link } from "react-router-dom";
-import styles from "../styles/MenuOption.module.css";
+import styles from "@styles/Components/MenuOption.module.css";
 
 type MenuLinkProps = {
   href: string;
