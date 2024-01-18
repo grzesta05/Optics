@@ -6,4 +6,6 @@ export default abstract class SimulationObject {
     this.xPosition = xPosition;
     this.yPosition = yPosition;
   }
+
+  abstract draw(ctx: CanvasRenderingContext2D): void;
 }

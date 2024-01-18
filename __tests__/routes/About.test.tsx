@@ -2,6 +2,7 @@ import { describe, test, expect, afterEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import About from "../../src/routes/About";
 import { BrowserRouter } from "react-router-dom";
+import React from "react";
 
 afterEach(() => {
   document.body.innerHTML = "";
