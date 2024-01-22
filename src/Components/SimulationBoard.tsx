@@ -5,5 +5,5 @@ type Props = {
 };
 
 export default function SimulationBoard({ objectsToRender }: Props) {
-  return <canvas></canvas>;
+  return <canvas data-testid="SimulationBoard"></canvas>;
 }
