@@ -9,6 +9,7 @@ export default defineConfig({
     port: 3000,
   },
   test: {
+    include: ["**/__tests__/**/*.test.?(c|m)[jt]s?(x)"],
     environment: "happy-dom",
   },
   resolve: {

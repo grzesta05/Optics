@@ -1,11 +1,12 @@
 import { Container, MenuLink } from "@components";
+import styles from "@/styles/routes/Start.module.css";
 
 function Start() {
   return (
-    <Container>
-      <h1>Start the app!</h1>
-      <MenuLink href={"/"}>Back</MenuLink>
-    </Container>
+    <div
+      data-testid="simulationContainer"
+      className={styles.simulationContainer}
+    ></div>
   );
 }
 
