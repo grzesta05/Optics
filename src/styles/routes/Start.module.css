@@ -1,7 +1,8 @@
 .simulationContainer {
-  height: 95vh;
-  width: 95vw;
-  padding: 5vw 5vw;
-  background-color: rgba(33, 33, 33, 0.99);
-  border-radius: 3vw;
+  width: min-content;
+
+  display: flex;
+  justify-content: center;
+
+  background-color: rgba(33, 33, 33, 1) !important;
 }

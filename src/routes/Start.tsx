@@ -4,11 +4,9 @@ import SimulationBoard from "@/Components/SimulationBoard";
 
 function Start() {
   return (
-    <Container>
-      <div data-testid="StartScreen" className={styles.simulationContainer}>
-        <SimulationBoard />
-      </div>
-    </Container>
+    <div data-testid="StartScreen" className={styles.simulationContainer}>
+      <SimulationBoard />
+    </div>
   );
 }
 
