@@ -5,6 +5,9 @@ type Props = {
   objectsToRender: Array<SimulationObject>;
 };
 
+const MAX_SIZE_MULTIPLIER = 10;
+const MIN_SIZE_MULTIPLIER = 0.001;
+
 export default function SimulationBoard({ objectsToRender }: Props) {
   const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
   const [sizeMultiplier, setSizeMultiplier] = useState(1);
@@ -50,7 +53,8 @@ export default function SimulationBoard({ objectsToRender }: Props) {
     if (isMouseClicked) {
       setSizeMultiplier((old) => {
         const newMultiplier = old + event.deltaY / -1000;
-        if (newMultiplier < 0.001) return 0.001;
+        if (newMultiplier < MIN_SIZE_MULTIPLIER) return MIN_SIZE_MULTIPLIER;
+        if (newMultiplier > MAX_SIZE_MULTIPLIER) return MAX_SIZE_MULTIPLIER;
         return newMultiplier;
       });
       console.log(sizeMultiplier);
