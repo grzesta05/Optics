@@ -7,6 +7,7 @@ type Props = {
 
 export default function SimulationBoard({ objectsToRender }: Props) {
   const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
+  const [sizeMultiplier, setSizeMultiplier] = useState(1);
   const [preMouseDownCursorPosition, setPreMouseDownCursorPosition] = useState({
     x: 0,
     y: 0,
@@ -33,10 +34,26 @@ export default function SimulationBoard({ objectsToRender }: Props) {
   const dragOnHanlder: React.MouseEventHandler<HTMLCanvasElement> = (event) => {
     if (isMouseClicked) {
       setCursorPosition({
-        x: preMouseDownCursorPosition.x + initialDragPosition.x - event.clientX,
-        y: preMouseDownCursorPosition.y + event.clientY - initialDragPosition.y,
+        x:
+          preMouseDownCursorPosition.x +
+          (initialDragPosition.x - event.clientX) / sizeMultiplier,
+        y:
+          preMouseDownCursorPosition.y +
+          (event.clientY - initialDragPosition.y) / sizeMultiplier,
       });
-      console.log("x: ", cursorPosition.x, " y: ", cursorPosition.y);
+      console.log(cursorPosition.x, cursorPosition.y);
+    }
+  };
+  const wheelResizeHandle: React.WheelEventHandler<HTMLCanvasElement> = (
+    event
+  ) => {
+    if (isMouseClicked) {
+      setSizeMultiplier((old) => {
+        const newMultiplier = old + event.deltaY / -1000;
+        if (newMultiplier < 0.001) return 0.001;
+        return newMultiplier;
+      });
+      console.log(sizeMultiplier);
     }
   };
   const dragEndHandler: React.MouseEventHandler<HTMLCanvasElement> = (
@@ -46,6 +63,7 @@ export default function SimulationBoard({ objectsToRender }: Props) {
   };
   return (
     <canvas
+      onWheel={wheelResizeHandle}
       onMouseDown={dragStartHandler}
       onMouseMove={dragOnHanlder}
       onMouseUp={dragEndHandler}
@@ -56,6 +74,7 @@ export default function SimulationBoard({ objectsToRender }: Props) {
         height: canvasSize.height + "px",
         backgroundPositionX: -cursorPosition.x,
         backgroundPositionY: cursorPosition.y,
+        backgroundSize: 100 * sizeMultiplier + "px",
       }}
       className={styles.canvas}
     ></canvas>
