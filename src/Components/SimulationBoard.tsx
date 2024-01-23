@@ -52,8 +52,8 @@ export default function SimulationBoard({ objectsToRender }: Props) {
       onMouseOut={dragEndHandler}
       data-testid="SimulationBoard"
       style={{
-        width: 100 / 1.2 + "vw",
-        height: 100 / 2 + "vh",
+        width: canvasSize.width + "px",
+        height: canvasSize.height + "px",
         backgroundPositionX: -cursorPosition.x,
         backgroundPositionY: cursorPosition.y,
       }}
