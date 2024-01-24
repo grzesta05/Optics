@@ -10,12 +10,17 @@ export default function SideWindowElement({ children, headerText }: Props) {
   return (
     <div>
       <div className={styles.toolbar}>
-        <button onClick={() => setIsHidden((v) => !v)}></button>
+        <button
+          style={{ transform: `rotate(${isHidden ? 90 : -90}deg)` }}
+          onClick={() => setIsHidden((v) => !v)}
+        >
+          &#10095;
+        </button>
         <h2>{headerText}</h2>
       </div>
       <div
         className={styles.element}
-        style={{ height: isHidden ? "0 px" : "auto" }}
+        style={{ transform: `scaleY(${isHidden ? 0 : 1})` }}
       >
         {children}
       </div>
