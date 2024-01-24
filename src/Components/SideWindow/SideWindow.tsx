@@ -1,5 +1,6 @@
 import { ReactElement } from "react";
 import SideWindowElement from "./SideWindowElement";
+import styles from "@styles/Components/SideWindow/SideWindow.module.css";
 
 type Props = {
   windows: Array<ReactElement>;
@@ -7,7 +8,7 @@ type Props = {
 
 export default function SideWindow({ windows }: Props) {
   return (
-    <div className="SideWindow">
+    <div className={styles.SideWindow}>
       {windows.map((element) => (
         <SideWindowElement headerText="">{element}</SideWindowElement>
       ))}
