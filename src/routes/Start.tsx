@@ -7,15 +7,7 @@ function Start() {
   return (
     <div data-testid="StartScreen" className={styles.simulationContainer}>
       <SimulationBoard />
-      <SideWindow
-        windows={[
-          <>
-            hi <br />
-            <br />
-            siema
-          </>,
-        ]}
-      />
+      <SideWindow windows={[]} />
     </div>
   );
 }
