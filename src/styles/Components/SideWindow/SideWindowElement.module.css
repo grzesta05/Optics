@@ -18,3 +18,9 @@
   transform-origin: top;
   color: white;
 }
+.toolbar > h2 {
+  text-align: center;
+  color: white;
+  align-self: center;
+  margin: 1vw;
+}

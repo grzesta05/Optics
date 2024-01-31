@@ -7,7 +7,14 @@ function Start() {
   return (
     <div data-testid="StartScreen" className={styles.simulationContainer}>
       <SimulationBoard />
-      <SideWindow windows={[]} />
+      <SideWindow
+        windows={[
+          {
+            component: <>Siema jestem Dawid, chyba nie przyjdę</>,
+            header: "Spóźnieni",
+          },
+        ]}
+      />
     </div>
   );
 }
