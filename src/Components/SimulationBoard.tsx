@@ -1,15 +1,20 @@
 import SimulationObject from "@/model/SimulationObject";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styles from "@styles/Components/SimulationBoard.module.css";
+type CursorPosition = {
+  x: number;
+  y: number;
+}
 type Props = {
   objectsToRender: Array<SimulationObject>;
+  setCursorPosition: (cursorPosition: CursorPosition) => void;
+  cursorPosition: CursorPosition
 };
 
 const MAX_SIZE_MULTIPLIER = 10;
 const MIN_SIZE_MULTIPLIER = 0.001;
 
-export default function SimulationBoard({ objectsToRender }: Props) {
-  const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
+export default function SimulationBoard({ objectsToRender, cursorPosition, setCursorPosition  }: Props) {
   const [sizeMultiplier, setSizeMultiplier] = useState(1);
   const [preMouseDownCursorPosition, setPreMouseDownCursorPosition] = useState({
     x: 0,
@@ -24,6 +29,11 @@ export default function SimulationBoard({ objectsToRender }: Props) {
     width: window.innerWidth / 1.2,
     height: window.innerHeight / 2,
   };
+
+  useEffect(() => {
+    console.log(canvasSize);
+  }, []);
+    
   const dragStartHandler: React.MouseEventHandler<HTMLCanvasElement> = (
     event
   ) => {
