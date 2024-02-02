@@ -10,7 +10,7 @@ function Start() {
   
   return (
     <div data-testid="StartScreen" className={styles.simulationContainer}>
-      <SimulationBoard setCursorPosition={setCursorPosition} cursorPosition={cursorPosition} objectsToRender={[]}/>
+      <SimulationBoard setCursorPosition={setCursorPosition} cursorPosition={cursorPosition} objectsToRender={[new Laser(0,0)]}/>
       <SideWindow windows={[]} />
     </div>
   );

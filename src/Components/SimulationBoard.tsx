@@ -1,6 +1,7 @@
 import SimulationObject from "@/model/SimulationObject";
-import { useState, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "@styles/Components/SimulationBoard.module.css";
+
 type CursorPosition = {
   x: number;
   y: number;
@@ -25,6 +26,7 @@ export default function SimulationBoard({ objectsToRender, cursorPosition, setCu
     x: 0,
     y: 0,
   });
+
   const canvasSize = {
     width: window.innerWidth / 1.2,
     height: window.innerHeight / 2,
@@ -54,7 +56,6 @@ export default function SimulationBoard({ objectsToRender, cursorPosition, setCu
           preMouseDownCursorPosition.y +
           (event.clientY - initialDragPosition.y) / sizeMultiplier,
       });
-      console.log(cursorPosition.x, cursorPosition.y);
     }
   };
   const wheelResizeHandle: React.WheelEventHandler<HTMLCanvasElement> = (
@@ -75,8 +76,57 @@ export default function SimulationBoard({ objectsToRender, cursorPosition, setCu
   ) => {
     setIsMouseClicked(false);
   };
+
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+   const ctx = canvasRef.current as HTMLCanvasElement;
+
+    ctx.width = canvasSize.width;
+    ctx.height = canvasSize.height;
+
+    const context = ctx.getContext("2d");
+
+    if (!context) return;
+
+    context.beginPath();
+    context.strokeStyle = "rgba(255,0,0,1)";
+    context.lineWidth = 1;
+    context.moveTo(0, 0);
+    context.lineTo(canvasSize.width, canvasSize.height);
+    context.stroke();
+    context.closePath();
+
+    context.beginPath();
+    context.strokeStyle = "rgba(255,255,0,1)";
+    context.lineWidth = 1;
+    context.moveTo(0, canvasSize.height);
+    context.lineTo(canvasSize.width, 0);
+    context.stroke();
+    context.closePath();
+
+    // context.moveTo(500, 0);
+    // context.lineTo(0,50);
+    // context.stroke();
+    // context.closePath();
+    // for (const object of objectsToRender) {
+    //     let image = new Image();
+    //     image.src = object.path;
+    //     image.onload = () => {
+    //       context?.drawImage(
+    //         image,
+    //         object.xPosition,
+    //         object.yPosition,
+    //         100,
+    //         100
+    //       );
+    //     };
+    //   }
+  }, [canvasRef, objectsToRender, cursorPosition, sizeMultiplier]);
+
   return (
     <canvas
+      ref={canvasRef}
       onWheel={wheelResizeHandle}
       onMouseDown={dragStartHandler}
       onMouseMove={dragOnHanlder}
@@ -84,8 +134,6 @@ export default function SimulationBoard({ objectsToRender, cursorPosition, setCu
       onMouseOut={dragEndHandler}
       data-testid="SimulationBoard"
       style={{
-        width: canvasSize.width + "px",
-        height: canvasSize.height + "px",
         backgroundPositionX: -cursorPosition.x,
         backgroundPositionY: cursorPosition.y,
         backgroundSize: 100 * sizeMultiplier + "px",
