@@ -1,8 +1,8 @@
 .simulationContainer {
-  width: min-content;
+	width: min-content;
 
-  display: flex;
-  justify-content: center;
+	display: flex;
+	justify-content: center;
 
-  background-color: rgba(33, 33, 33, 1) !important;
+	background-color: rgba(33, 33, 33, 1) !important;
 }

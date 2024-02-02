@@ -1,7 +1,7 @@
 .canvas {
-  background-image: url("/img/grid.png");
+	background-image: url("/img/grid.png");
 
-  background-size: 100px;
-  background-blend-mode: soft-light;
-  background-color: rgb(33, 33, 44);
+	background-size: 100px;
+	background-blend-mode: soft-light;
+	background-color: rgb(33, 33, 44);
 }

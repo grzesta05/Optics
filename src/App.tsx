@@ -3,17 +3,17 @@ import "@styles/global.css";
 import { Home, About, Start } from "@/routes/index";
 
 function App() {
-  return (
-    <>
-      <Router>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/start" element={<Start />} />
-        </Routes>
-      </Router>
-    </>
-  );
+	return (
+		<>
+			<Router>
+				<Routes>
+					<Route path="/" element={<Home/>}/>
+					<Route path="/about" element={<About/>}/>
+					<Route path="/start" element={<Start/>}/>
+				</Routes>
+			</Router>
+		</>
+	);
 }
 
 export default App;
