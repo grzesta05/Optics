@@ -26,6 +26,30 @@ class Point {
 
 		return this;
 	}
+
+	/**
+	 * Returns the distance between this point and another point.
+	 * @param other - The other point
+	 */
+	distanceTo(other: Point): number {
+		const dx = this.x - other.x;
+		const dy = this.y - other.y;
+		return Math.sqrt(dx * dx + dy * dy);
+	}
+
+	/**
+	 * Adds another point to this point - **in place**.
+	 * @param other - The other point
+	 */
+	add(other: Point): Point {
+		this.x += other.x;
+		this.y += other.y;
+		return this;
+	}
+
+	clone(): Point {
+		return new Point(this.x, this.y);
+	}
 }
 
 export default Point;

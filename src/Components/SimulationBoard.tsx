@@ -1,21 +1,18 @@
 import SimulationObject from "@/model/SimulationObject";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styles from "@styles/Components/SimulationBoard.module.css";
+import Point from "@/classes/Point.ts";
 
-type CursorPosition = {
-	x: number;
-	y: number;
-}
 type Props = {
 	objectsToRender: Array<SimulationObject>;
-	setCursorPosition: (cursorPosition: CursorPosition) => void;
-	cursorPosition: CursorPosition
+	setOffset: (offset: Point) => void;
+	offset: Point
 };
 
 const MAX_SIZE_MULTIPLIER = 10;
 const MIN_SIZE_MULTIPLIER = 0.001;
 
-export default function SimulationBoard({objectsToRender, cursorPosition, setCursorPosition}: Props) {
+export default function SimulationBoard({objectsToRender, offset, setOffset}: Props) {
 	const [sizeMultiplier, setSizeMultiplier] = useState(1);
 	const [preMouseDownCursorPosition, setPreMouseDownCursorPosition] = useState({
 		x: 0,
@@ -40,7 +37,7 @@ export default function SimulationBoard({objectsToRender, cursorPosition, setCur
 		event
 	) => {
 		setIsMouseClicked(true);
-		setPreMouseDownCursorPosition(cursorPosition);
+		setPreMouseDownCursorPosition(offset);
 		setInitialDragPosition({
 			x: event.clientX,
 			y: event.clientY,
@@ -48,14 +45,12 @@ export default function SimulationBoard({objectsToRender, cursorPosition, setCur
 	};
 	const dragOnHanlder: React.MouseEventHandler<HTMLCanvasElement> = (event) => {
 		if (isMouseClicked) {
-			setCursorPosition({
-				x:
-					preMouseDownCursorPosition.x +
-					(initialDragPosition.x - event.clientX) / sizeMultiplier,
-				y:
-					preMouseDownCursorPosition.y +
-					(event.clientY - initialDragPosition.y) / sizeMultiplier,
-			});
+			setOffset(new Point(
+				preMouseDownCursorPosition.x +
+				(initialDragPosition.x - event.clientX) / sizeMultiplier,
+				preMouseDownCursorPosition.y +
+				(event.clientY - initialDragPosition.y) / sizeMultiplier,
+			));
 		}
 	};
 	const wheelResizeHandle: React.WheelEventHandler<HTMLCanvasElement> = (
@@ -92,8 +87,8 @@ export default function SimulationBoard({objectsToRender, cursorPosition, setCur
 		for (const object of objectsToRender) {
 			let shouldRender = true;
 			const renderBounds = {
-				x: cursorPosition.x,
-				y: cursorPosition.y,
+				x: offset.x,
+				y: offset.y,
 				width: canvasSize.width / sizeMultiplier,
 				height: canvasSize.height / sizeMultiplier,
 			};
@@ -105,7 +100,7 @@ export default function SimulationBoard({objectsToRender, cursorPosition, setCur
 			}
 
 			// draw object bounds - mainly for debugging purposes
-			const bounds = object.boundsRect.points();
+			const bounds = object.bounds.points();
 			for (let i = 0; i < 4; i++) {
 				const x = bounds[i].x;
 				const y = bounds[i].y;
@@ -113,32 +108,40 @@ export default function SimulationBoard({objectsToRender, cursorPosition, setCur
 				const y2 = bounds[(i + 1) % 4].y;
 
 				context.beginPath();
-				context.moveTo((x - cursorPosition.x) * sizeMultiplier, (y + cursorPosition.y) * sizeMultiplier);
-				context.lineTo((x2 - cursorPosition.x) * sizeMultiplier, (y2 + cursorPosition.y) * sizeMultiplier);
+				context.moveTo((x - offset.x) * sizeMultiplier, (y + offset.y) * sizeMultiplier);
+				context.lineTo((x2 - offset.x) * sizeMultiplier, (y2 + offset.y) * sizeMultiplier);
 				context.stroke();
 			}
 
 			object.draw(drawCall);
 		}
-	}, [canvasRef, objectsToRender, cursorPosition, sizeMultiplier]);
+	}, [canvasRef, objectsToRender, offset, sizeMultiplier]);
 
-	const drawCall = (image: CanvasImageSource, x: number, y: number, rotation: number, sizeX: number, sizeY: number) => {
+	const drawCall = (image: CanvasImageSource, center: Point, rotation: number, sizeX: number, sizeY: number) => {
 		const ctx = canvasRef.current as HTMLCanvasElement;
 		const context = ctx.getContext("2d");
+		const topLeft = new Point(-sizeX / 2, -sizeY / 2).rotate(new Point(0, 0), rotation * Math.PI / 180).add(center);
+		const x = topLeft.x;
+		const y = topLeft.y;
 
 		if (rotation / 360 === 0) {
 			context?.drawImage(image,
-				(x - cursorPosition.x) * sizeMultiplier,
-				(y + cursorPosition.y) * sizeMultiplier,
+				(x - offset.x) * sizeMultiplier,
+				(y + offset.y) * sizeMultiplier,
 				sizeX * sizeMultiplier,
 				sizeY * sizeMultiplier
 			);
 		} else {
 			context?.save();
 			context?.translate(
-				(x - cursorPosition.x) * sizeMultiplier + sizeX * sizeMultiplier / 2,
-				(y + cursorPosition.y) * sizeMultiplier + sizeY * sizeMultiplier / 2
+				(center.x - offset.x) * sizeMultiplier,
+				(center.y + offset.y) * sizeMultiplier
 			);
+			// draw circle at 0,0
+			context?.beginPath();
+			context?.arc(0, 0, 5, 0, 2 * Math.PI);
+			context?.fill();
+
 			context?.rotate(rotation * Math.PI / 180);
 			context?.drawImage(image,
 				-sizeX * sizeMultiplier / 2,
@@ -160,8 +163,8 @@ export default function SimulationBoard({objectsToRender, cursorPosition, setCur
 			onMouseOut={dragEndHandler}
 			data-testid="SimulationBoard"
 			style={{
-				backgroundPositionX: -cursorPosition.x * sizeMultiplier,
-				backgroundPositionY: cursorPosition.y * sizeMultiplier,
+				backgroundPositionX: -offset.x * sizeMultiplier,
+				backgroundPositionY: offset.y * sizeMultiplier,
 				backgroundSize: 100 * sizeMultiplier + "px",
 			}}
 			className={styles.canvas}
