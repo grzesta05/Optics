@@ -106,23 +106,18 @@ export default function SimulationBoard({objectsToRender, cursorPosition, setCur
       context.stroke();
       context.closePath();
 
-    // context.moveTo(500, 0);
-    // context.lineTo(0,50);
-    // context.stroke();
-    // context.closePath();
-    // for (const object of objectsToRender) {
-    //     let image = new Image();
-    //     image.src = object.path;
-    //     image.onload = () => {
-    //       context?.drawImage(
-    //         image,
-    //         object.xPosition,
-    //         object.yPosition,
-    //         100,
-    //         100
-    //       );
-    //     };
-    //   }
+        let image = new Image();
+        image.src = object.path;
+        image.onload = () => {
+          context?.drawImage(
+            image,
+            (object.xPosition - cursorPosition.x) * sizeMultiplier,
+            (object.yPosition + cursorPosition.y) * sizeMultiplier,
+            100 * sizeMultiplier,
+            100 * sizeMultiplier
+          );
+        };
+      }
   }, [canvasRef, objectsToRender, cursorPosition, sizeMultiplier]);
 
   return (
@@ -135,8 +130,8 @@ export default function SimulationBoard({objectsToRender, cursorPosition, setCur
       onMouseOut={dragEndHandler}
       data-testid="SimulationBoard"
       style={{
-        backgroundPositionX: -cursorPosition.x,
-        backgroundPositionY: cursorPosition.y,
+        backgroundPositionX: -cursorPosition.x * sizeMultiplier,
+        backgroundPositionY: cursorPosition.y * sizeMultiplier,
         backgroundSize: 100 * sizeMultiplier + "px",
       }}
       className={styles.canvas}
