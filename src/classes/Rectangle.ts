@@ -53,7 +53,42 @@ class Rectangle {
 
 		return this;
 	}
-	
+
+	intersectsOrContains(other: Rectangle): boolean {
+		return (
+			this.contains(other.topLeft) ||
+			this.contains(other.topRight) ||
+			this.contains(other.bottomRight) ||
+			this.contains(other.bottomLeft) ||
+			other.contains(this.topLeft) ||
+			other.contains(this.topRight) ||
+			other.contains(this.bottomRight) ||
+			other.contains(this.bottomLeft)
+		);
+	}
+
+	/**
+	 * Checks if a point is inside the rectangle.
+	 * @param point - The point to check
+	 * @returns True if the point is inside the rectangle, false otherwise
+	 */
+	contains(point: Point): boolean {
+		const crossProduct = (p1: Point, p2: Point, p3: Point) => {
+			return (p2.x - p1.x) * (p3.y - p1.y) - (p2.y - p1.y) * (p3.x - p1.x);
+		};
+
+		const isInside = (p: Point, p1: Point, p2: Point, p3: Point, p4: Point) => {
+			return (
+				crossProduct(p, p1, p2) >= 0 &&
+				crossProduct(p, p2, p3) >= 0 &&
+				crossProduct(p, p3, p4) >= 0 &&
+				crossProduct(p, p4, p1) >= 0
+			);
+		};
+
+		return isInside(point, this.topLeft, this.topRight, this.bottomRight, this.bottomLeft);
+	}
+
 	static fromTopLeftAndSize(topLeft: Point, sizeX: number, sizeY: number, rotation: number = 0): Rectangle {
 		const rect = new Rectangle(
 			topLeft,

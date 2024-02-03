@@ -50,6 +50,10 @@ class Point {
 	clone(): Point {
 		return new Point(this.x, this.y);
 	}
+
+	toString(): string {
+		return `(${this.x}, ${this.y})`;
+	}
 }
 
 export default Point;
