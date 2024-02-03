@@ -87,22 +87,21 @@ export default function SimulationBoard({objectsToRender, cursorPosition, setCur
 
 		if (!context) return;
 
-		for (const object of objectsToRender) {
-			context.beginPath();
-			context.strokeStyle = "rgba(255,0,0,1)";
-			context.lineWidth = 1;
-			context.moveTo((object.xPosition - cursorPosition.x) * sizeMultiplier, (object.yPosition + cursorPosition.y) * sizeMultiplier);
-			context.lineTo((object.xPosition - cursorPosition.x + object.sizeX) * sizeMultiplier, (object.yPosition + cursorPosition.y + object.sizeY) * sizeMultiplier);
-			context.stroke();
-			context.closePath();
+		context.strokeStyle = "yellow";
 
-			context.beginPath();
-			context.strokeStyle = "rgba(255,255,0,1)";
-			context.lineWidth = 1;
-			context.moveTo((object.xPosition - cursorPosition.x + object.sizeX) * sizeMultiplier, (object.yPosition + cursorPosition.y) * sizeMultiplier);
-			context.lineTo((object.xPosition - cursorPosition.x) * sizeMultiplier, (object.yPosition + cursorPosition.y + object.sizeY) * sizeMultiplier);
-			context.stroke();
-			context.closePath();
+		for (const object of objectsToRender) {
+			const bounds = object.bounds;
+			for (let i = 0; i < 4; i++) {
+				const x = bounds[i].x;
+				const y = bounds[i].y;
+				const x2 = bounds[(i + 1) % 4].x;
+				const y2 = bounds[(i + 1) % 4].y;
+
+				context.beginPath();
+				context.moveTo((x - cursorPosition.x) * sizeMultiplier, (y + cursorPosition.y) * sizeMultiplier);
+				context.lineTo((x2 - cursorPosition.x) * sizeMultiplier, (y2 + cursorPosition.y) * sizeMultiplier);
+				context.stroke();
+			}
 
 			object.draw(drawCall);
 		}
