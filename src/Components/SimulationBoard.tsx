@@ -3,91 +3,91 @@ import { useEffect, useRef, useState } from "react";
 import styles from "@styles/Components/SimulationBoard.module.css";
 
 type CursorPosition = {
-  x: number;
-  y: number;
+	x: number;
+	y: number;
 }
 type Props = {
-  objectsToRender: Array<SimulationObject>;
-  setCursorPosition: (cursorPosition: CursorPosition) => void;
-  cursorPosition: CursorPosition
+	objectsToRender: Array<SimulationObject>;
+	setCursorPosition: (cursorPosition: CursorPosition) => void;
+	cursorPosition: CursorPosition
 };
 
 const MAX_SIZE_MULTIPLIER = 10;
 const MIN_SIZE_MULTIPLIER = 0.001;
 
-export default function SimulationBoard({ objectsToRender, cursorPosition, setCursorPosition  }: Props) {
-  const [sizeMultiplier, setSizeMultiplier] = useState(1);
-  const [preMouseDownCursorPosition, setPreMouseDownCursorPosition] = useState({
-    x: 0,
-    y: 0,
-  });
-  const [isMouseClicked, setIsMouseClicked] = useState(false);
-  const [initialDragPosition, setInitialDragPosition] = useState({
-    x: 0,
-    y: 0,
-  });
+export default function SimulationBoard({objectsToRender, cursorPosition, setCursorPosition}: Props) {
+	const [sizeMultiplier, setSizeMultiplier] = useState(1);
+	const [preMouseDownCursorPosition, setPreMouseDownCursorPosition] = useState({
+		x: 0,
+		y: 0,
+	});
+	const [isMouseClicked, setIsMouseClicked] = useState(false);
+	const [initialDragPosition, setInitialDragPosition] = useState({
+		x: 0,
+		y: 0,
+	});
 
   const canvasSize = {
     width: window.innerWidth / 1.2 - 300,
     height: window.innerHeight / 2,
   };
 
-  useEffect(() => {
-    console.log(canvasSize);
-  }, []);
-    
-  const dragStartHandler: React.MouseEventHandler<HTMLCanvasElement> = (
-    event
-  ) => {
-    setIsMouseClicked(true);
-    setPreMouseDownCursorPosition(cursorPosition);
-    setInitialDragPosition({
-      x: event.clientX,
-      y: event.clientY,
-    });
-  };
-  const dragOnHanlder: React.MouseEventHandler<HTMLCanvasElement> = (event) => {
-    if (isMouseClicked) {
-      setCursorPosition({
-        x:
-          preMouseDownCursorPosition.x +
-          (initialDragPosition.x - event.clientX) / sizeMultiplier,
-        y:
-          preMouseDownCursorPosition.y +
-          (event.clientY - initialDragPosition.y) / sizeMultiplier,
-      });
-    }
-  };
-  const wheelResizeHandle: React.WheelEventHandler<HTMLCanvasElement> = (
-    event
-  ) => {
-    if (isMouseClicked) {
-      setSizeMultiplier((old) => {
-        const newMultiplier = old + event.deltaY / -1000;
-        if (newMultiplier < MIN_SIZE_MULTIPLIER) return MIN_SIZE_MULTIPLIER;
-        if (newMultiplier > MAX_SIZE_MULTIPLIER) return MAX_SIZE_MULTIPLIER;
-        return newMultiplier;
-      });
-      console.log(sizeMultiplier);
-    }
-  };
-  const dragEndHandler: React.MouseEventHandler<HTMLCanvasElement> = (
-    event
-  ) => {
-    setIsMouseClicked(false);
-  };
+	useEffect(() => {
+		console.log(canvasSize);
+	}, []);
 
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+	const dragStartHandler: React.MouseEventHandler<HTMLCanvasElement> = (
+		event
+	) => {
+		setIsMouseClicked(true);
+		setPreMouseDownCursorPosition(cursorPosition);
+		setInitialDragPosition({
+			x: event.clientX,
+			y: event.clientY,
+		});
+	};
+	const dragOnHanlder: React.MouseEventHandler<HTMLCanvasElement> = (event) => {
+		if (isMouseClicked) {
+			setCursorPosition({
+				x:
+					preMouseDownCursorPosition.x +
+					(initialDragPosition.x - event.clientX) / sizeMultiplier,
+				y:
+					preMouseDownCursorPosition.y +
+					(event.clientY - initialDragPosition.y) / sizeMultiplier,
+			});
+		}
+	};
+	const wheelResizeHandle: React.WheelEventHandler<HTMLCanvasElement> = (
+		event
+	) => {
+		if (isMouseClicked) {
+			setSizeMultiplier((old) => {
+				const newMultiplier = old + event.deltaY / -1000;
+				if (newMultiplier < MIN_SIZE_MULTIPLIER) return MIN_SIZE_MULTIPLIER;
+				if (newMultiplier > MAX_SIZE_MULTIPLIER) return MAX_SIZE_MULTIPLIER;
+				return newMultiplier;
+			});
+			console.log(sizeMultiplier);
+		}
+	};
+	const dragEndHandler: React.MouseEventHandler<HTMLCanvasElement> = (
+		event
+	) => {
+		setIsMouseClicked(false);
+	};
 
-  useEffect(() => {
-   const ctx = canvasRef.current as HTMLCanvasElement;
+	const canvasRef = useRef<HTMLCanvasElement>(null);
 
-    ctx.width = canvasSize.width;
-    ctx.height = canvasSize.height;
+	useEffect(() => {
+		const ctx = canvasRef.current as HTMLCanvasElement;
 
-    const context = ctx.getContext("2d");
+		ctx.width = canvasSize.width;
+		ctx.height = canvasSize.height;
 
-    if (!context) return;
+		const context = ctx.getContext("2d");
+
+		if (!context) return;
 
     for (const object of objectsToRender) {
       context.beginPath();
@@ -106,18 +106,23 @@ export default function SimulationBoard({ objectsToRender, cursorPosition, setCu
       context.stroke();
       context.closePath();
 
-        let image = new Image();
-        image.src = object.path;
-        image.onload = () => {
-          context?.drawImage(
-            image,
-            (object.xPosition - cursorPosition.x) * sizeMultiplier,
-            (object.yPosition + cursorPosition.y) * sizeMultiplier,
-            100 * sizeMultiplier,
-            100 * sizeMultiplier
-          );
-        };
-      }
+    // context.moveTo(500, 0);
+    // context.lineTo(0,50);
+    // context.stroke();
+    // context.closePath();
+    // for (const object of objectsToRender) {
+    //     let image = new Image();
+    //     image.src = object.path;
+    //     image.onload = () => {
+    //       context?.drawImage(
+    //         image,
+    //         object.xPosition,
+    //         object.yPosition,
+    //         100,
+    //         100
+    //       );
+    //     };
+    //   }
   }, [canvasRef, objectsToRender, cursorPosition, sizeMultiplier]);
 
   return (
@@ -130,8 +135,8 @@ export default function SimulationBoard({ objectsToRender, cursorPosition, setCu
       onMouseOut={dragEndHandler}
       data-testid="SimulationBoard"
       style={{
-        backgroundPositionX: -cursorPosition.x * sizeMultiplier,
-        backgroundPositionY: cursorPosition.y * sizeMultiplier,
+        backgroundPositionX: -cursorPosition.x,
+        backgroundPositionY: cursorPosition.y,
         backgroundSize: 100 * sizeMultiplier + "px",
       }}
       className={styles.canvas}
