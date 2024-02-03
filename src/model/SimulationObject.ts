@@ -1,4 +1,4 @@
-type DrawCall = (image: CanvasImageSource, x: number, y: number, sizeX: number, sizeY: number) => void;
+type DrawCall = (image: CanvasImageSource, x: number, y: number, rotation: number, sizeX: number, sizeY: number) => void;
 
 export default abstract class SimulationObject {
 	xPosition: number;
@@ -6,12 +6,14 @@ export default abstract class SimulationObject {
 	imagePath: string;
 	sizeX: number;
 	sizeY: number;
+	rotation: number = 0;
 
 	_image: HTMLImageElement;
 
-	constructor(xPosition: number, yPosition: number, imagePath: string, sizeX: number, sizeY: number) {
+	constructor(xPosition: number, yPosition: number, rotation: number, imagePath: string, sizeX: number, sizeY: number) {
 		this.xPosition = xPosition;
 		this.yPosition = yPosition;
+		this.rotation = rotation;
 		this.imagePath = imagePath;
 		this.sizeX = sizeX;
 		this.sizeY = sizeY;
@@ -22,10 +24,10 @@ export default abstract class SimulationObject {
 
 	draw(drawCall: DrawCall) {
 		if (this._image.complete) {
-			drawCall(this._image, this.xPosition, this.yPosition, this.sizeX, this.sizeY);
+			drawCall(this._image, this.xPosition, this.yPosition, this.rotation, this.sizeX, this.sizeY);
 		} else {
 			this._image.onload = () => {
-				drawCall(this._image, this.xPosition, this.yPosition, this.sizeX, this.sizeY);
+				drawCall(this._image, this.xPosition, this.yPosition, this.rotation, this.sizeX, this.sizeY);
 			};
 		}
 	}

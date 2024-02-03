@@ -108,15 +108,32 @@ export default function SimulationBoard({objectsToRender, cursorPosition, setCur
 		}
 	}, [canvasRef, objectsToRender, cursorPosition, sizeMultiplier]);
 
-	const drawCall = (image: CanvasImageSource, x: number, y: number, sizeX: number, sizeY: number) => {
+	const drawCall = (image: CanvasImageSource, x: number, y: number, rotation: number, sizeX: number, sizeY: number) => {
 		const ctx = canvasRef.current as HTMLCanvasElement;
 		const context = ctx.getContext("2d");
-		context?.drawImage(image,
-			(x - cursorPosition.x) * sizeMultiplier,
-			(y + cursorPosition.y) * sizeMultiplier,
-			sizeX * sizeMultiplier,
-			sizeY * sizeMultiplier
-		);
+
+		if (rotation / 360 === 0) {
+			context?.drawImage(image,
+				(x - cursorPosition.x) * sizeMultiplier,
+				(y + cursorPosition.y) * sizeMultiplier,
+				sizeX * sizeMultiplier,
+				sizeY * sizeMultiplier
+			);
+		} else {
+			context?.save();
+			context?.translate(
+				(x - cursorPosition.x) * sizeMultiplier + sizeX * sizeMultiplier / 2,
+				(y + cursorPosition.y) * sizeMultiplier + sizeY * sizeMultiplier / 2
+			);
+			context?.rotate(rotation * Math.PI / 180);
+			context?.drawImage(image,
+				-sizeX * sizeMultiplier / 2,
+				-sizeY * sizeMultiplier / 2,
+				sizeX * sizeMultiplier,
+				sizeY * sizeMultiplier
+			);
+			context?.restore();
+		}
 	};
 
 	return (
