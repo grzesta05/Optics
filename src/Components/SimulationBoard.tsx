@@ -27,10 +27,10 @@ export default function SimulationBoard({objectsToRender, cursorPosition, setCur
 		y: 0,
 	});
 
-  const canvasSize = {
-    width: window.innerWidth / 1.2 - 300,
-    height: window.innerHeight / 2,
-  };
+	const canvasSize = {
+		width: window.innerWidth / 1.2 - 300,
+		height: window.innerHeight / 2,
+	};
 
 	useEffect(() => {
 		console.log(canvasSize);
@@ -71,9 +71,7 @@ export default function SimulationBoard({objectsToRender, cursorPosition, setCur
 			console.log(sizeMultiplier);
 		}
 	};
-	const dragEndHandler: React.MouseEventHandler<HTMLCanvasElement> = (
-		event
-	) => {
+	const dragEndHandler: React.MouseEventHandler<HTMLCanvasElement> = () => {
 		setIsMouseClicked(false);
 	};
 
@@ -89,52 +87,53 @@ export default function SimulationBoard({objectsToRender, cursorPosition, setCur
 
 		if (!context) return;
 
-    for (const object of objectsToRender) {
-      context.beginPath();
-      context.strokeStyle = "rgba(255,0,0,1)";
-      context.lineWidth = 1;
-      context.moveTo((object.xPosition - cursorPosition.x) * sizeMultiplier, (object.yPosition + cursorPosition.y) * sizeMultiplier);
-      context.lineTo((object.xPosition - cursorPosition.x + 100) * sizeMultiplier, (object.yPosition + cursorPosition.y + 100) * sizeMultiplier);
-      context.stroke();
-      context.closePath();
-  
-      context.beginPath();
-      context.strokeStyle = "rgba(255,255,0,1)";
-      context.lineWidth = 1;
-      context.moveTo((object.xPosition - cursorPosition.x + 100) * sizeMultiplier, (object.yPosition + cursorPosition.y) * sizeMultiplier);
-      context.lineTo((object.xPosition - cursorPosition.x) * sizeMultiplier, (object.yPosition + cursorPosition.y + 100) * sizeMultiplier);
-      context.stroke();
-      context.closePath();
+		for (const object of objectsToRender) {
+			context.beginPath();
+			context.strokeStyle = "rgba(255,0,0,1)";
+			context.lineWidth = 1;
+			context.moveTo((object.xPosition - cursorPosition.x) * sizeMultiplier, (object.yPosition + cursorPosition.y) * sizeMultiplier);
+			context.lineTo((object.xPosition - cursorPosition.x + object.sizeX) * sizeMultiplier, (object.yPosition + cursorPosition.y + object.sizeY) * sizeMultiplier);
+			context.stroke();
+			context.closePath();
 
-        let image = new Image();
-        image.src = object.path;
-        image.onload = () => {
-          context?.drawImage(
-            image,
-            (object.xPosition - cursorPosition.x) * sizeMultiplier,
-            (object.yPosition + cursorPosition.y) * sizeMultiplier,
-            100 * sizeMultiplier,
-            100 * sizeMultiplier
-          );
-        };
-      }
-  }, [canvasRef, objectsToRender, cursorPosition, sizeMultiplier]);
+			context.beginPath();
+			context.strokeStyle = "rgba(255,255,0,1)";
+			context.lineWidth = 1;
+			context.moveTo((object.xPosition - cursorPosition.x + object.sizeX) * sizeMultiplier, (object.yPosition + cursorPosition.y) * sizeMultiplier);
+			context.lineTo((object.xPosition - cursorPosition.x) * sizeMultiplier, (object.yPosition + cursorPosition.y + object.sizeY) * sizeMultiplier);
+			context.stroke();
+			context.closePath();
 
-  return (
-    <canvas
-      ref={canvasRef}
-      onWheel={wheelResizeHandle}
-      onMouseDown={dragStartHandler}
-      onMouseMove={dragOnHanlder}
-      onMouseUp={dragEndHandler}
-      onMouseOut={dragEndHandler}
-      data-testid="SimulationBoard"
-      style={{
-        backgroundPositionX: -cursorPosition.x * sizeMultiplier,
-        backgroundPositionY: cursorPosition.y * sizeMultiplier,
-        backgroundSize: 100 * sizeMultiplier + "px",
-      }}
-      className={styles.canvas}
-    ></canvas>
-  );
+			object.draw(drawCall);
+		}
+	}, [canvasRef, objectsToRender, cursorPosition, sizeMultiplier]);
+
+	const drawCall = (image: CanvasImageSource, x: number, y: number, sizeX: number, sizeY: number) => {
+		const ctx = canvasRef.current as HTMLCanvasElement;
+		const context = ctx.getContext("2d");
+		context?.drawImage(image,
+			(x - cursorPosition.x) * sizeMultiplier,
+			(y + cursorPosition.y) * sizeMultiplier,
+			sizeX * sizeMultiplier,
+			sizeY * sizeMultiplier
+		);
+	};
+
+	return (
+		<canvas
+			ref={canvasRef}
+			onWheel={wheelResizeHandle}
+			onMouseDown={dragStartHandler}
+			onMouseMove={dragOnHanlder}
+			onMouseUp={dragEndHandler}
+			onMouseOut={dragEndHandler}
+			data-testid="SimulationBoard"
+			style={{
+				backgroundPositionX: -cursorPosition.x * sizeMultiplier,
+				backgroundPositionY: cursorPosition.y * sizeMultiplier,
+				backgroundSize: 100 * sizeMultiplier + "px",
+			}}
+			className={styles.canvas}
+		></canvas>
+	);
 }
