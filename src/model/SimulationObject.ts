@@ -1,5 +1,7 @@
+import Rectangle from "@/classes/Rectangle.ts";
+import Point from "@/classes/Point.ts";
+
 type DrawCall = (image: CanvasImageSource, x: number, y: number, rotation: number, sizeX: number, sizeY: number) => void;
-type Point = { x: number, y: number };
 
 export default abstract class SimulationObject {
 	xPosition: number;
@@ -11,7 +13,8 @@ export default abstract class SimulationObject {
 
 	_image: HTMLImageElement;
 
-	bounds: Point[] = [];
+	boundsRect: Rectangle;
+	center: Point;
 
 	constructor(xPosition: number, yPosition: number, rotation: number, imagePath: string, sizeX: number, sizeY: number) {
 		this.xPosition = xPosition;
@@ -21,6 +24,14 @@ export default abstract class SimulationObject {
 		this.sizeX = sizeX;
 		this.sizeY = sizeY;
 
+		this.center = new Point(this.xPosition + this.sizeX / 2, this.yPosition + this.sizeY / 2);
+		this.boundsRect = new Rectangle(
+			new Point(this.xPosition, this.yPosition),
+			new Point(this.xPosition + this.sizeX, this.yPosition),
+			new Point(this.xPosition + this.sizeX, this.yPosition + this.sizeY),
+			new Point(this.xPosition, this.yPosition + this.sizeY)
+		);
+
 		this._image = new Image();
 		this._image.src = imagePath;
 
@@ -28,32 +39,14 @@ export default abstract class SimulationObject {
 	}
 
 	recalculateBounds() {
-		const centerX = this.xPosition + this.sizeX / 2;
-		const centerY = this.yPosition + this.sizeY / 2;
-		const halfWidth = this.sizeX / 2;
-		const halfHeight = this.sizeY / 2;
+		this.boundsRect = new Rectangle(
+			new Point(this.xPosition, this.yPosition),
+			new Point(this.xPosition + this.sizeX, this.yPosition),
+			new Point(this.xPosition + this.sizeX, this.yPosition + this.sizeY),
+			new Point(this.xPosition, this.yPosition + this.sizeY)
+		);
 
-		const cos = Math.cos(this.rotation * Math.PI / 180);
-		const sin = Math.sin(this.rotation * Math.PI / 180);
-
-		const topLeft = {
-			x: centerX - halfWidth * cos + halfHeight * sin,
-			y: centerY - halfWidth * sin - halfHeight * cos
-		};
-		const topRight = {
-			x: centerX + halfWidth * cos + halfHeight * sin,
-			y: centerY + halfWidth * sin - halfHeight * cos
-		};
-		const bottomLeft = {
-			x: centerX - halfWidth * cos - halfHeight * sin,
-			y: centerY - halfWidth * sin + halfHeight * cos
-		};
-		const bottomRight = {
-			x: centerX + halfWidth * cos - halfHeight * sin,
-			y: centerY + halfWidth * sin + halfHeight * cos
-		};
-
-		this.bounds = [topLeft, topRight, bottomRight, bottomLeft];
+		this.boundsRect.rotate(this.center, this.rotation);
 	}
 
 	draw(drawCall: DrawCall) {

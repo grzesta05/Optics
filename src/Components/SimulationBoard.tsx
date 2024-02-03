@@ -90,7 +90,22 @@ export default function SimulationBoard({objectsToRender, cursorPosition, setCur
 		context.strokeStyle = "yellow";
 
 		for (const object of objectsToRender) {
-			const bounds = object.bounds;
+			let shouldRender = true;
+			const renderBounds = {
+				x: cursorPosition.x,
+				y: cursorPosition.y,
+				width: canvasSize.width / sizeMultiplier,
+				height: canvasSize.height / sizeMultiplier,
+			};
+
+			console.log(renderBounds.width, renderBounds.height);
+
+			if (!shouldRender) {
+				continue;
+			}
+
+			// draw object bounds - mainly for debugging purposes
+			const bounds = object.boundsRect.points();
 			for (let i = 0; i < 4; i++) {
 				const x = bounds[i].x;
 				const y = bounds[i].y;
