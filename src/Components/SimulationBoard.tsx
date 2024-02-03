@@ -28,7 +28,7 @@ export default function SimulationBoard({ objectsToRender, cursorPosition, setCu
   });
 
   const canvasSize = {
-    width: window.innerWidth / 1.2,
+    width: window.innerWidth / 1.2 - 300,
     height: window.innerHeight / 2,
   };
 
@@ -89,39 +89,35 @@ export default function SimulationBoard({ objectsToRender, cursorPosition, setCu
 
     if (!context) return;
 
-    context.beginPath();
-    context.strokeStyle = "rgba(255,0,0,1)";
-    context.lineWidth = 1;
-    context.moveTo(0, 0);
-    context.lineTo(canvasSize.width, canvasSize.height);
-    context.stroke();
-    context.closePath();
+    for (const object of objectsToRender) {
+      context.beginPath();
+      context.strokeStyle = "rgba(255,0,0,1)";
+      context.lineWidth = 1;
+      context.moveTo((object.xPosition - cursorPosition.x) * sizeMultiplier, (object.yPosition + cursorPosition.y) * sizeMultiplier);
+      context.lineTo((object.xPosition - cursorPosition.x + 100) * sizeMultiplier, (object.yPosition + cursorPosition.y + 100) * sizeMultiplier);
+      context.stroke();
+      context.closePath();
+  
+      context.beginPath();
+      context.strokeStyle = "rgba(255,255,0,1)";
+      context.lineWidth = 1;
+      context.moveTo((object.xPosition - cursorPosition.x + 100) * sizeMultiplier, (object.yPosition + cursorPosition.y) * sizeMultiplier);
+      context.lineTo((object.xPosition - cursorPosition.x) * sizeMultiplier, (object.yPosition + cursorPosition.y + 100) * sizeMultiplier);
+      context.stroke();
+      context.closePath();
 
-    context.beginPath();
-    context.strokeStyle = "rgba(255,255,0,1)";
-    context.lineWidth = 1;
-    context.moveTo(0, canvasSize.height);
-    context.lineTo(canvasSize.width, 0);
-    context.stroke();
-    context.closePath();
-
-    // context.moveTo(500, 0);
-    // context.lineTo(0,50);
-    // context.stroke();
-    // context.closePath();
-    // for (const object of objectsToRender) {
-    //     let image = new Image();
-    //     image.src = object.path;
-    //     image.onload = () => {
-    //       context?.drawImage(
-    //         image,
-    //         object.xPosition,
-    //         object.yPosition,
-    //         100,
-    //         100
-    //       );
-    //     };
-    //   }
+        let image = new Image();
+        image.src = object.path;
+        image.onload = () => {
+          context?.drawImage(
+            image,
+            (object.xPosition - cursorPosition.x) * sizeMultiplier,
+            (object.yPosition + cursorPosition.y) * sizeMultiplier,
+            100 * sizeMultiplier,
+            100 * sizeMultiplier
+          );
+        };
+      }
   }, [canvasRef, objectsToRender, cursorPosition, sizeMultiplier]);
 
   return (
@@ -134,8 +130,8 @@ export default function SimulationBoard({ objectsToRender, cursorPosition, setCu
       onMouseOut={dragEndHandler}
       data-testid="SimulationBoard"
       style={{
-        backgroundPositionX: -cursorPosition.x,
-        backgroundPositionY: cursorPosition.y,
+        backgroundPositionX: -cursorPosition.x * sizeMultiplier,
+        backgroundPositionY: cursorPosition.y * sizeMultiplier,
         backgroundSize: 100 * sizeMultiplier + "px",
       }}
       className={styles.canvas}
