@@ -2,6 +2,7 @@ import SimulationObject from "@/model/SimulationObject";
 import React, { useEffect, useRef, useState } from "react";
 import styles from "@styles/Components/SimulationBoard.module.css";
 import Point from "@/classes/Point.ts";
+import Rectangle from "@/classes/Rectangle.ts";
 
 type Props = {
 	objectsToRender: Array<SimulationObject>;
@@ -82,19 +83,19 @@ export default function SimulationBoard({objectsToRender}: Props) {
 		if (!context) return;
 
 		context.strokeStyle = "yellow";
+		const renderBounds = Rectangle.fromTopLeftAndSize(
+			new Point(offset.x, -offset.y),
+			canvasSize.width / sizeMultiplier,
+			canvasSize.height / sizeMultiplier
+		);
+
+		let totalObjects = objectsToRender.length;
+		let skippedObjects = 0;
 
 		for (const object of objectsToRender) {
-			let shouldRender = true;
-			const renderBounds = {
-				x: offset.x,
-				y: offset.y,
-				width: canvasSize.width / sizeMultiplier,
-				height: canvasSize.height / sizeMultiplier,
-			};
-
-			console.log(renderBounds.width, renderBounds.height);
-
+			const shouldRender = renderBounds.intersectsOrContains(object.bounds);
 			if (!shouldRender) {
+				skippedObjects++;
 				continue;
 			}
 
@@ -114,6 +115,8 @@ export default function SimulationBoard({objectsToRender}: Props) {
 
 			object.draw(drawCall);
 		}
+
+		console.log(`Skipped ${skippedObjects} out of ${totalObjects} objects`);
 	}, [canvasRef, objectsToRender, offset, sizeMultiplier]);
 
 	const drawCall = (image: CanvasImageSource, center: Point, rotation: number, sizeX: number, sizeY: number) => {
