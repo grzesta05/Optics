@@ -7,8 +7,9 @@ import SimulationObject from "@/model/SimulationObject.ts";
 
 function Start() {
 	const [objectsToRender, _] = useState<Array<SimulationObject>>([
-		new Laser(0, 0),
-		new Laser(200, 200),
+		new Laser(0, 0, 0),
+		new Laser(200, 200, 34),
+		new Laser(400, 50, 141),
 	]);
 
 	return (
