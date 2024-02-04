@@ -47,6 +47,16 @@ class Point {
 		return this;
 	}
 
+	/**
+	 * Subtracts another point from this point - **in place**.
+	 * @param other - The other point
+	 */
+	subtract(other: Point): Point {
+		this.x -= other.x;
+		this.y -= other.y;
+		return this;
+	}
+
 	clone(): Point {
 		return new Point(this.x, this.y);
 	}

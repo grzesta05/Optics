@@ -57,13 +57,34 @@ export default function SimulationBoard({objectsToRender}: Props) {
 		event
 	) => {
 		if (isMouseClicked) {
-			setSizeMultiplier((old) => {
-				const newMultiplier = old + event.deltaY / -1000;
-				if (newMultiplier < MIN_SIZE_MULTIPLIER) return MIN_SIZE_MULTIPLIER;
-				if (newMultiplier > MAX_SIZE_MULTIPLIER) return MAX_SIZE_MULTIPLIER;
-				return newMultiplier;
+			const canvasPosition = canvasRef.current?.getBoundingClientRect();
+			const x = event.clientX - (canvasPosition?.left ?? 0);
+			const y = event.clientY - (canvasPosition?.top ?? 0);
+
+			const mousePosition = new Point(
+				x / sizeMultiplier + offset.x,
+				offset.y - y / sizeMultiplier
+			);
+			let newMultiplier = sizeMultiplier + event.deltaY / -1000;
+			if (newMultiplier < MIN_SIZE_MULTIPLIER) newMultiplier = MIN_SIZE_MULTIPLIER;
+			if (newMultiplier > MAX_SIZE_MULTIPLIER) newMultiplier = MAX_SIZE_MULTIPLIER;
+
+			// move the offset so that the mouse position stays the same
+			const newMousePosition = new Point(
+				x / newMultiplier + offset.x,
+				offset.y - y / newMultiplier
+			);
+			console.log(offset);
+			const newOffset = offset.add(mousePosition.subtract(newMousePosition));
+			setOffset(newOffset);
+			setSizeMultiplier(newMultiplier);
+
+			// refresh the current drag position
+			setPreMouseDownCursorPosition(newOffset);
+			setInitialDragPosition({
+				x: event.clientX,
+				y: event.clientY,
 			});
-			console.log(sizeMultiplier);
 		}
 	};
 	const dragEndHandler: React.MouseEventHandler<HTMLCanvasElement> = () => {
