@@ -7,6 +7,7 @@ import { isSender } from "@/model/SimulationObjects/Sender.ts";
 import { positionToCanvas } from "@/utils/canvas.ts";
 import { toDegrees } from "@/utils/algebra.ts";
 import { getAllLinearFunctions } from "@/utils/geometry.ts";
+import { LinearFunction } from "@/classes/Lines/LinearFunction.ts";
 
 type Props = {
 	objectsToRender: Array<SimulationObject>;
@@ -133,7 +134,7 @@ export default function SimulationBoard({objectsToRender}: Props) {
 
 		for (const object of objectsToRender) {
 			if (isSender(object)) {
-				for (const laser of object.lasers) {
+				for (const laser of object.lasers as LinearFunction[]) {
 					if (!laser.hasIntersectionsCalculated) {
 						laser.calculateIntersections(possibleLimits);
 					}

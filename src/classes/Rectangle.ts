@@ -10,6 +10,9 @@ class Rectangle {
 	bottomRight: Point;
 	bottomLeft: Point;
 
+	/**
+	 * Rotation of the rectangle in radians.
+	 */
 	rotation: number = 0;
 
 	minX: number = 0;
@@ -105,7 +108,7 @@ class Rectangle {
 		return (b1 === b2) && (b2 === b3) && (b3 === b4);
 	}
 
-	static fromTopLeftAndSize(topLeft: Point, sizeX: number, sizeY: number, rotation: number = 0): Rectangle {
+	static fromTopLeftAndSize(topLeft: Point, sizeX: number, sizeY: number, degrees: number = 0): Rectangle {
 		const rect = new Rectangle(
 			topLeft,
 			new Point(topLeft.x + sizeX, topLeft.y),
@@ -113,7 +116,7 @@ class Rectangle {
 			new Point(topLeft.x, topLeft.y + sizeY)
 		);
 
-		rect.rotate(new Point(topLeft.x + sizeX / 2, topLeft.y + sizeY / 2), rotation);
+		rect.rotate(new Point(topLeft.x + sizeX / 2, topLeft.y + sizeY / 2), degrees);
 
 		return rect;
 	}

@@ -1,5 +1,5 @@
 import Point from "@/classes/Point.ts";
-import { toDegrees } from "@/utils/algebra.ts";
+import { toDegrees, toRadians } from "@/utils/algebra.ts";
 
 export enum Direction {
 	Right = -1,
@@ -94,10 +94,16 @@ export class LinearFunction {
 
 	static fromPointAndAngle(point: Point, radians: number): LinearFunction {
 		// we invert the angle because the y-axis is inverted in the canvas
-		const a = Math.tan(radians);
+		let degrees = toDegrees(radians);
+		if (degrees === 90) {
+			degrees -= 0.0001;
+		} else if (degrees === 270) {
+			degrees += 0.0001;
+		}
+
+		const a = Math.tan(toRadians(degrees));
 		const b = point.y - a * point.x;
 		let direction = Direction.Left;
-		const degrees = toDegrees(radians);
 		if (degrees > 90 && degrees < 270) {
 			direction = Direction.Right;
 		}
@@ -106,6 +112,10 @@ export class LinearFunction {
 	}
 
 	static fromTwoPoints(p1: Point, p2: Point, direction: Direction = Direction.Left): LinearFunction {
+		if(p1.x === p2.x) {
+			p1.x += 0.0001;
+		}
+
 		const a = (p2.y - p1.y) / (p2.x - p1.x);
 		const b = p1.y - a * p1.x;
 		return new LinearFunction(a, b, direction);
