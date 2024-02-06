@@ -1,5 +1,5 @@
 .button {
-	background-color: #50c878;
+	background-color: #ede9e8;
 	color: black;
 	border: none;
 	padding: 10px 25px;
@@ -12,5 +12,17 @@
 
 	&.rounded {
 		border-radius: 10px;
+	}
+
+	&.success {
+		background-color: #50c878;
+	}
+
+	&.error {
+		background-color: #f01e2c;
+	}
+
+	&.danger {
+		background-color: #f4c430;
 	}
 }
