@@ -20,6 +20,7 @@
 
 	&.error {
 		background-color: #f01e2c;
+		color: #eee;
 	}
 
 	&.danger {
