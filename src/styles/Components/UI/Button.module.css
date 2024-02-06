@@ -1,0 +1,16 @@
+.button {
+	background-color: #50c878;
+	color: black;
+	border: none;
+	padding: 10px 25px;
+	font-size: 1.2rem;
+	text-transform: uppercase;
+
+	&.menutab {
+		border-radius: 0 0 5px 10px;
+	}
+
+	&.rounded {
+		border-radius: 10px;
+	}
+}
