@@ -1,8 +1,8 @@
 import Rectangle from "@/classes/Rectangle.ts";
 import Point from "@/classes/Point.ts";
 import Sender from "@/model/SimulationObjects/Sender.ts";
-import { LinearFunction } from "@/classes/Lines/LinearFunction.ts";
 import { toDegrees } from "@/utils/algebra.ts";
+import { Particle } from "@/classes/Lines/Particle.ts";
 
 export default class Laser extends Sender {
 	constructor(x: number, y: number, degrees: number) {
@@ -13,13 +13,13 @@ export default class Laser extends Sender {
 		// colors that make up white light
 		const colors = [
 			"#FF0000",
-		]
+		];
 		let centerX = startPoint.x;
-		let lasers: LinearFunction[] = [];
+		let lasers: Particle[] = [];
 
-		for(let i = 0; i < colors.length; i++) {
-			const laser = LinearFunction.fromPointAndAngle(startPoint, rect.rotation);
-			laser.intensity = 0.5 / colors.length;
+		for (let i = 0; i < colors.length; i++) {
+			const laser = Particle.fromPointAndAngle(startPoint, rect.rotation);
+			laser.intensity = 1 / colors.length;
 			laser.color = colors[i];
 
 			if (degrees % 360 > 90 && degrees % 360 < 270) {

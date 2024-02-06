@@ -1,12 +1,25 @@
 import Point from "@/classes/Point.ts";
-import { toDegrees, toRadians } from "@/utils/algebra.ts";
+import { toDegrees } from "@/utils/algebra.ts";
 
 export enum Direction {
 	Right = -1,
 	Left = 1
 }
 
-export class LinearFunction {
+export const getDirection = (radians: number) => {
+	let degrees = toDegrees(radians);
+	if (degrees === 90) {
+		degrees -= 0.0001;
+	} else if (degrees === 270) {
+		degrees += 0.0001;
+	}
+	if (degrees > 90 && degrees < 270) {
+		return Direction.Left;
+	}
+	return Direction.Right;
+};
+
+export abstract class LinearFunction {
 	public a: number;
 	public b: number;
 
@@ -15,40 +28,10 @@ export class LinearFunction {
 
 	public direction: Direction;
 
-	public color: string = "#FF0000";
-	public intensity: number = 1;
-
-	private _hasIntersectionsCalculated: boolean = false;
-
-	public get hasIntersectionsCalculated(): boolean {
-		return this._hasIntersectionsCalculated;
-	}
-
-	constructor(a: number, b: number, direction: Direction = Direction.Left) {
+	protected constructor(a: number, b: number, direction: Direction = Direction.Left) {
 		this.a = a;
 		this.b = b;
 		this.direction = direction;
-	}
-
-	public calculateIntersections(others: LinearFunction[]): void {
-		for (const other of others) {
-			this.calculateIntersectionWith(other);
-		}
-		this._hasIntersectionsCalculated = true;
-	}
-
-	private calculateIntersectionWith(other: LinearFunction): void {
-		const intersection = this.intersectionWith(other);
-		if (intersection) {
-			if (this.isWithinLimits(intersection.x)) {
-				console.log(intersection.x, this.lowerLimit, this.upperLimit, this.direction);
-				if (this.direction === Direction.Left) {
-					this.upperLimit = Math.min(this.upperLimit, intersection.x);
-				} else {
-					this.lowerLimit = Math.max(this.lowerLimit, intersection.x);
-				}
-			}
-		}
 	}
 
 	/**
@@ -92,32 +75,7 @@ export class LinearFunction {
 		}
 	}
 
-	static fromPointAndAngle(point: Point, radians: number): LinearFunction {
-		// we invert the angle because the y-axis is inverted in the canvas
-		let degrees = toDegrees(radians);
-		if (degrees === 90) {
-			degrees -= 0.0001;
-		} else if (degrees === 270) {
-			degrees += 0.0001;
-		}
-
-		const a = Math.tan(toRadians(degrees));
-		const b = point.y - a * point.x;
-		let direction = Direction.Left;
-		if (degrees > 90 && degrees < 270) {
-			direction = Direction.Right;
-		}
-
-		return new LinearFunction(a, b, direction);
-	}
-
-	static fromTwoPoints(p1: Point, p2: Point, direction: Direction = Direction.Left): LinearFunction {
-		if(p1.x === p2.x) {
-			p1.x += 0.0001;
-		}
-
-		const a = (p2.y - p1.y) / (p2.x - p1.x);
-		const b = p1.y - a * p1.x;
-		return new LinearFunction(a, b, direction);
+	public angleBetween(other: LinearFunction): number {
+		return Math.atan((other.a - this.a) / (1 + this.a * other.a));
 	}
 }

@@ -6,8 +6,8 @@ import Rectangle from "@/classes/Rectangle.ts";
 import { isSender } from "@/model/SimulationObjects/Sender.ts";
 import { positionToCanvas } from "@/utils/canvas.ts";
 import { toDegrees } from "@/utils/algebra.ts";
-import { getAllLinearFunctions } from "@/utils/geometry.ts";
-import { LinearFunction } from "@/classes/Lines/LinearFunction.ts";
+import { getAllSurfaces } from "@/utils/geometry.ts";
+import { Particle } from "@/classes/Lines/Particle.ts";
 
 type Props = {
 	objectsToRender: Array<SimulationObject>;
@@ -39,7 +39,7 @@ export default function SimulationBoard({objectsToRender}: Props) {
 	}, []);
 
 	const possibleLimits = useMemo(
-		() => getAllLinearFunctions(objectsToRender.map((obj) => obj.bounds)),
+		() => getAllSurfaces(objectsToRender.map((obj) => obj.bounds)),
 		[objectsToRender]
 	);
 
@@ -130,44 +130,19 @@ export default function SimulationBoard({objectsToRender}: Props) {
 		let totalObjects = objectsToRender.length;
 		let skippedObjects = 0;
 
-		console.log(possibleLimits);
-
 		for (const object of objectsToRender) {
 			if (isSender(object)) {
-				for (const laser of object.lasers as LinearFunction[]) {
-					if (!laser.hasIntersectionsCalculated) {
-						laser.calculateIntersections(possibleLimits);
+				for (const particle of object.particles as Particle[]) {
+					if (!particle.hasReflectionsCalculated) {
+						particle.calculateReflections(possibleLimits, null);
 					}
 
-					const lowerBound = Math.max(laser.lowerLimit, renderBounds.minX);
-					const upperBound = Math.min(laser.upperLimit, renderBounds.maxX);
-
-					if (lowerBound > upperBound) {
-						continue;
+					console.log(particle.childReflections);
+					for (const child of particle.childReflections) {
+						drawLaser(child, renderBounds, context);
 					}
 
-					const laserStart = new Point(lowerBound, laser.at(lowerBound));
-					const laserEnd = new Point(upperBound, laser.at(upperBound));
-
-					context.beginPath();
-					context.strokeStyle = laser.color + Math.floor(laser.intensity * 255).toString(16);
-					context.lineWidth = 2 * sizeMultiplier;
-					context.moveTo(...positionToCanvas(laserStart.x, laserStart.y, offset, sizeMultiplier));
-					context.lineTo(...positionToCanvas(laserEnd.x, laserEnd.y, offset, sizeMultiplier));
-					context.stroke();
-
-					context.textAlign = "center";
-					context.textBaseline = "middle";
-					context.fillStyle = "white";
-
-					context.fillText(
-						"(" + (laserStart.x.toFixed(2)) + ", " + (laserStart.y.toFixed(2)) + ")",
-						...positionToCanvas(laserStart.x, laserStart.y, offset, sizeMultiplier)
-					);
-					context.fillText(
-						"(" + (laserEnd.x.toFixed(2)) + ", " + (laserEnd.y.toFixed(2)) + ")",
-						...positionToCanvas(laserEnd.x, laserEnd.y, offset, sizeMultiplier)
-					);
+					drawLaser(particle, renderBounds, context);
 				}
 			}
 
@@ -197,6 +172,38 @@ export default function SimulationBoard({objectsToRender}: Props) {
 		}
 
 		console.log(`Skipped ${skippedObjects} out of ${totalObjects} objects`);
+	};
+
+	const drawLaser = (particle: Particle, renderBounds: Rectangle, context: CanvasRenderingContext2D) => {
+		const lowerBound = Math.max(particle.lowerLimit, renderBounds.minX);
+		const upperBound = Math.min(particle.upperLimit, renderBounds.maxX);
+
+		if (lowerBound > upperBound) {
+			return;
+		}
+
+		const laserStart = new Point(lowerBound, particle.at(lowerBound));
+		const laserEnd = new Point(upperBound, particle.at(upperBound));
+
+		context.beginPath();
+		context.strokeStyle = particle.color + Math.floor(particle.intensity * 255).toString(16);
+		context.lineWidth = 2 * sizeMultiplier;
+		context.moveTo(...positionToCanvas(laserStart.x, laserStart.y, offset, sizeMultiplier));
+		context.lineTo(...positionToCanvas(laserEnd.x, laserEnd.y, offset, sizeMultiplier));
+		context.stroke();
+
+		context.textAlign = "center";
+		context.textBaseline = "middle";
+		context.fillStyle = "white";
+
+		context.fillText(
+			"(" + (laserStart.x.toFixed(2)) + ", " + (laserStart.y.toFixed(2)) + ")",
+			...positionToCanvas(laserStart.x, laserStart.y, offset, sizeMultiplier)
+		);
+		context.fillText(
+			"(" + (laserEnd.x.toFixed(2)) + ", " + (laserEnd.y.toFixed(2)) + ")",
+			...positionToCanvas(laserEnd.x, laserEnd.y, offset, sizeMultiplier)
+		);
 	};
 
 	const drawCall = (image: CanvasImageSource, center: Point, rotation: number, sizeX: number, sizeY: number) => {

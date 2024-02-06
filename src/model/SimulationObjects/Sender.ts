@@ -1,13 +1,13 @@
 import SimulationObject from "@/model/SimulationObject.ts";
 import Rectangle from "@/classes/Rectangle.ts";
-import { LinearFunction } from "@/classes/LinearFunction.ts";
+import { Particle } from "@/classes/Lines/Particle.ts";
 
 export default abstract class Sender extends SimulationObject {
-	public lasers: LinearFunction[] = [];
+	public particles: Particle[] = [];
 
-	protected constructor(rect: Rectangle, imagePath: string, lasers: LinearFunction[]) {
+	protected constructor(rect: Rectangle, imagePath: string, lasers: Particle[]) {
 		super(rect, imagePath);
-		this.lasers = lasers;
+		this.particles = lasers;
 		console.log("Created new Sender with bounds");
 	}
 }
