@@ -67,36 +67,34 @@ export default function SimulationBoard({objectsToRender}: Props) {
 	const wheelResizeHandle: React.WheelEventHandler<HTMLCanvasElement> = (
 		event
 	) => {
-		if (isMouseClicked) {
-			const canvasPosition = canvasRef.current?.getBoundingClientRect();
-			const x = event.clientX - (canvasPosition?.left ?? 0);
-			const y = event.clientY - (canvasPosition?.top ?? 0);
+		const canvasPosition = canvasRef.current?.getBoundingClientRect();
+		const x = event.clientX - (canvasPosition?.left ?? 0);
+		const y = event.clientY - (canvasPosition?.top ?? 0);
 
-			const mousePosition = new Point(
-				x / sizeMultiplier + offset.x,
-				offset.y - y / sizeMultiplier
-			);
-			let newMultiplier = sizeMultiplier + event.deltaY / -1000;
-			if (newMultiplier < MIN_SIZE_MULTIPLIER) newMultiplier = MIN_SIZE_MULTIPLIER;
-			if (newMultiplier > MAX_SIZE_MULTIPLIER) newMultiplier = MAX_SIZE_MULTIPLIER;
+		const mousePosition = new Point(
+			x / sizeMultiplier + offset.x,
+			offset.y - y / sizeMultiplier
+		);
+		let newMultiplier = sizeMultiplier + event.deltaY / -1000;
+		if (newMultiplier < MIN_SIZE_MULTIPLIER) newMultiplier = MIN_SIZE_MULTIPLIER;
+		if (newMultiplier > MAX_SIZE_MULTIPLIER) newMultiplier = MAX_SIZE_MULTIPLIER;
 
-			// move the offset so that the mouse position stays the same
-			const newMousePosition = new Point(
-				x / newMultiplier + offset.x,
-				offset.y - y / newMultiplier
-			);
-			console.log(offset);
-			const newOffset = offset.add(mousePosition.subtract(newMousePosition));
-			setOffset(newOffset);
-			setSizeMultiplier(newMultiplier);
+		// move the offset so that the mouse position stays the same
+		const newMousePosition = new Point(
+			x / newMultiplier + offset.x,
+			offset.y - y / newMultiplier
+		);
+		console.log(offset);
+		const newOffset = offset.add(mousePosition.subtract(newMousePosition));
+		setOffset(newOffset);
+		setSizeMultiplier(newMultiplier);
 
-			// refresh the current drag position
-			setPreMouseDownCursorPosition(newOffset);
-			setInitialDragPosition({
-				x: event.clientX,
-				y: event.clientY,
-			});
-		}
+		// refresh the current drag position
+		setPreMouseDownCursorPosition(newOffset);
+		setInitialDragPosition({
+			x: event.clientX,
+			y: event.clientY,
+		});
 	};
 	const dragEndHandler: React.MouseEventHandler<HTMLCanvasElement> = () => {
 		setIsMouseClicked(false);
@@ -196,12 +194,20 @@ export default function SimulationBoard({objectsToRender}: Props) {
 		context.textAlign = "center";
 		context.textBaseline = "middle";
 		context.font = "50px Arial";
-		context.fillStyle = "white";
+		context.fillStyle = particle.color;
 
-		context.fillText(
-			particle.direction == Direction.Left ? "←" : "→",
-			...positionToCanvas(laserStart.x, laserStart.y, offset, sizeMultiplier)
-		);
+		// if(particle.direction == Direction.Left) {
+		// 	context.fillText(
+		// 		"←",
+		// 		...positionToCanvas(laserEnd.x, laserEnd.y, offset, sizeMultiplier)
+		// 	);
+		// 	return;
+		// }
+		//
+		// context.fillText(
+		// 	"→",
+		// 	...positionToCanvas(laserStart.x, laserStart.y, offset, sizeMultiplier)
+		// );
 	};
 
 	const drawCall = (image: CanvasImageSource, center: Point, rotation: number, sizeX: number, sizeY: number) => {

@@ -51,7 +51,8 @@ export class Particle extends LinearFunction {
 		if (this._currentReflectionSurface && this._currentReflectionPoint) {
 			const angleBetween = this.angleBetween(this._currentReflectionSurface);
 			// get the point a little bit earlier than the reflection point
-			const actualReflectionPoint = this._currentReflectionPoint.add(new Point(-0.1, 0).rotate(toDegrees(this.angle)));
+			let x = this.direction == Direction.Left ? 0.01 : -0.01;
+			const actualReflectionPoint = this._currentReflectionPoint.add(new Point(x, 0).rotate(toDegrees(this.angle)));
 			const childReflection = this.rotateWithAPoint(angleBetween * 2, actualReflectionPoint);
 			childReflection.reflexionIndex = this.reflexionIndex + 1;
 			if (childReflection.direction === Direction.Right) {
