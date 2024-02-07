@@ -8,6 +8,7 @@ import { positionToCanvas } from "@/utils/canvas.ts";
 import { toDegrees } from "@/utils/algebra.ts";
 import { getAllSurfaces } from "@/utils/geometry.ts";
 import { Particle } from "@/classes/Lines/Particle.ts";
+import { Direction } from "@/classes/Lines/LinearFunction.ts";
 
 type Props = {
 	objectsToRender: Array<SimulationObject>;
@@ -66,7 +67,7 @@ export default function SimulationBoard({objectsToRender}: Props) {
 	const wheelResizeHandle: React.WheelEventHandler<HTMLCanvasElement> = (
 		event
 	) => {
-		// if (isMouseClicked) {
+		if (isMouseClicked) {
 			const canvasPosition = canvasRef.current?.getBoundingClientRect();
 			const x = event.clientX - (canvasPosition?.left ?? 0);
 			const y = event.clientY - (canvasPosition?.top ?? 0);
@@ -95,7 +96,7 @@ export default function SimulationBoard({objectsToRender}: Props) {
 				x: event.clientX,
 				y: event.clientY,
 			});
-		// }
+		}
 	};
 	const dragEndHandler: React.MouseEventHandler<HTMLCanvasElement> = () => {
 		setIsMouseClicked(false);
@@ -194,15 +195,12 @@ export default function SimulationBoard({objectsToRender}: Props) {
 
 		context.textAlign = "center";
 		context.textBaseline = "middle";
+		context.font = "50px Arial";
 		context.fillStyle = "white";
 
 		context.fillText(
-			"(" + (laserStart.x.toFixed(2)) + ", " + (laserStart.y.toFixed(2)) + ")",
+			particle.direction == Direction.Left ? "←" : "→",
 			...positionToCanvas(laserStart.x, laserStart.y, offset, sizeMultiplier)
-		);
-		context.fillText(
-			"(" + (laserEnd.x.toFixed(2)) + ", " + (laserEnd.y.toFixed(2)) + ")",
-			...positionToCanvas(laserEnd.x, laserEnd.y, offset, sizeMultiplier)
 		);
 	};
 

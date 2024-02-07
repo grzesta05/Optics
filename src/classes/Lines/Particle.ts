@@ -2,6 +2,7 @@ import { Direction, getDirection, LinearFunction } from "@/classes/Lines/LinearF
 import Point from "@/classes/Point.ts";
 import { Surface } from "@/classes/Lines/Surface.ts";
 import { calculateLinearFromPointAndAngle } from "@/utils/geometry.ts";
+import { toDegrees } from "@/utils/algebra.ts";
 
 const REFLECTIONS_LIMIT = 3;
 
@@ -21,6 +22,10 @@ export class Particle extends LinearFunction {
 
 	public get hasLimitsCalculated(): boolean {
 		return this._hasLimitsCalculated;
+	}
+
+	public get angle(): number {
+		return Math.atan(this.a);
 	}
 
 	private _currentReflectionSurface: Surface | null = null;
@@ -46,23 +51,19 @@ export class Particle extends LinearFunction {
 		if (this._currentReflectionSurface && this._currentReflectionPoint) {
 			const angleBetween = this.angleBetween(this._currentReflectionSurface);
 			// get the point a little bit earlier than the reflection point
-			// const angle = Math.atan(this.a);
-			// let x = this.direction == Direction.Left ? -1 : 1;
-			// this._currentReflectionPoint.add(new Point(x, 0).rotate(angle));
-			const childReflection = this.rotateWithAPoint(angleBetween * 2, this._currentReflectionPoint);
+			const actualReflectionPoint = this._currentReflectionPoint.add(new Point(-0.1, 0).rotate(toDegrees(this.angle)));
+			const childReflection = this.rotateWithAPoint(angleBetween * 2, actualReflectionPoint);
 			childReflection.reflexionIndex = this.reflexionIndex + 1;
 			if (childReflection.direction === Direction.Right) {
-				childReflection.lowerLimit = this._currentReflectionPoint.x;
+				childReflection.lowerLimit = actualReflectionPoint.x;
 			} else {
-				childReflection.upperLimit = this._currentReflectionPoint.x;
+				childReflection.upperLimit = actualReflectionPoint.x;
 			}
-
 			if (parent) {
 				parent.childReflections.push(childReflection);
 			} else {
 				this.childReflections.push(childReflection);
 			}
-
 			childReflection.calculateReflections(others, parent || this);
 		}
 
@@ -80,7 +81,7 @@ export class Particle extends LinearFunction {
 	protected calculateLimitsUsing(other: Surface): void {
 		const intersection = this.intersectionWith(other);
 		if (intersection) {
-			if (this.direction === Direction.Left && this.upperLimit > intersection.x) {
+			if (this.direction === Direction.Right && this.upperLimit > intersection.x) {
 				this.upperLimit = intersection.x;
 				this._currentReflectionSurface = other;
 				this._currentReflectionPoint = intersection;

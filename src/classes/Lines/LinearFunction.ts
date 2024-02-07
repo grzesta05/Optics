@@ -8,6 +8,7 @@ export enum Direction {
 
 export const getDirection = (radians: number) => {
 	let degrees = toDegrees(radians);
+	degrees = degrees % 360;
 	if (degrees === 90) {
 		degrees -= 0.0001;
 	} else if (degrees === 270) {

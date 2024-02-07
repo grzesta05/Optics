@@ -28,9 +28,9 @@ export const calculateLinearFromPointAndAngle = (point: Point, radians: number) 
 
 	const a = Math.tan(toRadians(degrees));
 	const b = point.y - a * point.x;
-	let direction = Direction.Left;
+	let direction = Direction.Right;
 	if (degrees > 90 && degrees < 270) {
-		direction = Direction.Right;
+		direction = Direction.Left;
 	}
 
 	return {a, b, direction};
