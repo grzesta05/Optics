@@ -2,7 +2,6 @@ import { Direction, getDirection, LinearFunction } from "@/classes/Lines/LinearF
 import Point from "@/classes/Point.ts";
 import { Surface } from "@/classes/Lines/Surface.ts";
 import { calculateLinearFromPointAndAngle } from "@/utils/geometry.ts";
-import { toDegrees } from "@/utils/algebra.ts";
 
 const REFLECTIONS_LIMIT = 3;
 
@@ -22,10 +21,6 @@ export class Particle extends LinearFunction {
 
 	public get hasLimitsCalculated(): boolean {
 		return this._hasLimitsCalculated;
-	}
-
-	public get angle(): number {
-		return Math.atan(this.a);
 	}
 
 	private _currentReflectionSurface: Surface | null = null;
@@ -51,19 +46,23 @@ export class Particle extends LinearFunction {
 		if (this._currentReflectionSurface && this._currentReflectionPoint) {
 			const angleBetween = this.angleBetween(this._currentReflectionSurface);
 			// get the point a little bit earlier than the reflection point
-			const actualReflectionPoint = this._currentReflectionPoint.add(new Point(-0.1, 0).rotate(toDegrees(this.angle)));
-			const childReflection = this.rotateWithAPoint(angleBetween * 2, actualReflectionPoint);
+			// const angle = Math.atan(this.a);
+			// let x = this.direction == Direction.Left ? -1 : 1;
+			// this._currentReflectionPoint.add(new Point(x, 0).rotate(angle));
+			const childReflection = this.rotateWithAPoint(angleBetween * 2, this._currentReflectionPoint);
 			childReflection.reflexionIndex = this.reflexionIndex + 1;
 			if (childReflection.direction === Direction.Right) {
-				childReflection.lowerLimit = actualReflectionPoint.x;
+				childReflection.lowerLimit = this._currentReflectionPoint.x;
 			} else {
-				childReflection.upperLimit = actualReflectionPoint.x;
+				childReflection.upperLimit = this._currentReflectionPoint.x;
 			}
+
 			if (parent) {
 				parent.childReflections.push(childReflection);
 			} else {
 				this.childReflections.push(childReflection);
 			}
+
 			childReflection.calculateReflections(others, parent || this);
 		}
 

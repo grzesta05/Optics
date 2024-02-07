@@ -66,7 +66,7 @@ export default function SimulationBoard({objectsToRender}: Props) {
 	const wheelResizeHandle: React.WheelEventHandler<HTMLCanvasElement> = (
 		event
 	) => {
-		if (isMouseClicked) {
+		// if (isMouseClicked) {
 			const canvasPosition = canvasRef.current?.getBoundingClientRect();
 			const x = event.clientX - (canvasPosition?.left ?? 0);
 			const y = event.clientY - (canvasPosition?.top ?? 0);
@@ -95,7 +95,7 @@ export default function SimulationBoard({objectsToRender}: Props) {
 				x: event.clientX,
 				y: event.clientY,
 			});
-		}
+		// }
 	};
 	const dragEndHandler: React.MouseEventHandler<HTMLCanvasElement> = () => {
 		setIsMouseClicked(false);
