@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react";
-import styles from "@styles/components/UI/Button.module.css";
+import styles from "@styles/Components/UI/Button.module.css";
 
 export type ButtonStyle = "rect" | "menutab" | "rounded";
 export type ButtonColor = "normal" | "error" | "danger" | "success";

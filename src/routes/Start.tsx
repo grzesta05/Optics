@@ -5,7 +5,6 @@ import Laser from "@/model/SimulationObjects/Senders/Laser";
 import {FormEvent, useState} from "react";
 import SimulationObject from "@/model/SimulationObject.ts";
 import BottomMenu from "@components/BottomMenu.tsx";
-import {HTMLInputElement} from "happy-dom";
 
 function Start() {
 	const [objectsToRender, setObjectsToRender] = useState<Array<SimulationObject>>([
@@ -14,16 +13,24 @@ function Start() {
 	]);
 
 	const loadJSONSimulationBoard = async (event: FormEvent) => {
-		const fileInput = event.target as unknown as HTMLInputElement;
+		const fileInput = event.target as HTMLInputElement;
 
-		if (fileInput.files.length === 0) {
+		if (fileInput.files?.length === 0) {
 			return;
 		}
 
-		const uploadedFile = fileInput.files[0];
+		const uploadedFile = fileInput.files![0];
 
 		try {
-			setObjectsToRender(JSON.parse(await uploadedFile.text()));
+			const uploadedObjects = JSON.parse(await uploadedFile.text()) as Array<SimulationObject>;
+
+			setObjectsToRender(uploadedObjects.map((boardObject) => {
+				const boardObjectCpy = structuredClone(boardObject);
+
+				boardObjectCpy.loadImage(boardObject.imagePath);
+
+				return boardObjectCpy;
+			}));
 		} catch (e) {
 			// Show notification later
 			console.error('error', e);
