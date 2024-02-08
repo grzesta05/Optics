@@ -1,3 +1,5 @@
+import { toRadians } from "@/utils/algebra.ts";
+
 /**
  * A point in 2D space.
  */
@@ -13,10 +15,10 @@ class Point {
 	/**
 	 * Rotates a point around a center point by a given angle - **in place**.
 	 * @param center - The center point to rotate around
-	 * @param angle - The angle to rotate by, in degrees
+	 * @param degrees - The angle to rotate by, in degrees
 	 */
-	rotate(center: Point, angle: number): Point {
-		const radians = angle * Math.PI / 180;
+	rotate(degrees: number, center: Point = new Point(0, 0)): Point {
+		const radians = toRadians(degrees);
 		const cos = Math.cos(radians);
 		const sin = Math.sin(radians);
 		const x = this.x - center.x;
@@ -63,6 +65,10 @@ class Point {
 
 	toString(): string {
 		return `(${this.x}, ${this.y})`;
+	}
+
+	static midpoint(a: Point, b: Point): Point {
+		return new Point((a.x + b.x) / 2, (a.y + b.y) / 2);
 	}
 }
 

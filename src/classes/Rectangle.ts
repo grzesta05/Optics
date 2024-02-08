@@ -1,4 +1,5 @@
 import Point from "@/classes/Point.ts";
+import { toRadians } from "@/utils/algebra.ts";
 
 /**
  * A rectangle defined by its four corners.
@@ -9,12 +10,15 @@ class Rectangle {
 	bottomRight: Point;
 	bottomLeft: Point;
 
+	/**
+	 * Rotation of the rectangle in radians.
+	 */
 	rotation: number = 0;
 
-	_minX: number = 0;
-	_maxX: number = 0;
-	_minY: number = 0;
-	_maxY: number = 0;
+	minX: number = 0;
+	maxX: number = 0;
+	minY: number = 0;
+	maxY: number = 0;
 
 	constructor(topLeft: Point, topRight: Point, bottomRight: Point, bottomLeft: Point) {
 		this.topLeft = topLeft;
@@ -27,10 +31,10 @@ class Rectangle {
 	}
 
 	_recalculateMinMax() {
-		this._minX = Math.min(this.topLeft.x, this.topRight.x, this.bottomRight.x, this.bottomLeft.x);
-		this._maxX = Math.max(this.topLeft.x, this.topRight.x, this.bottomRight.x, this.bottomLeft.x);
-		this._minY = Math.min(this.topLeft.y, this.topRight.y, this.bottomRight.y, this.bottomLeft.y);
-		this._maxY = Math.max(this.topLeft.y, this.topRight.y, this.bottomRight.y, this.bottomLeft.y);
+		this.minX = Math.min(this.topLeft.x, this.topRight.x, this.bottomRight.x, this.bottomLeft.x);
+		this.maxX = Math.max(this.topLeft.x, this.topRight.x, this.bottomRight.x, this.bottomLeft.x);
+		this.minY = Math.min(this.topLeft.y, this.topRight.y, this.bottomRight.y, this.bottomLeft.y);
+		this.maxY = Math.max(this.topLeft.y, this.topRight.y, this.bottomRight.y, this.bottomLeft.y);
 	}
 
 	center(): Point {
@@ -55,15 +59,15 @@ class Rectangle {
 	/**
 	 * Rotates a rectangle around a center point by a given angle - **in place**.
 	 * @param center - The center point to rotate around
-	 * @param angle - The angle to rotate by, in degrees
+	 * @param degrees - The angle to rotate by, in degrees
 	 */
-	rotate(center: Point, angle: number): Rectangle {
-		this.topLeft.rotate(center, angle);
-		this.topRight.rotate(center, angle);
-		this.bottomRight.rotate(center, angle);
-		this.bottomLeft.rotate(center, angle);
+	rotate(center: Point, degrees: number): Rectangle {
+		this.topLeft.rotate(degrees, center);
+		this.topRight.rotate(degrees, center);
+		this.bottomRight.rotate(degrees, center);
+		this.bottomLeft.rotate(degrees, center);
 
-		this.rotation += angle;
+		this.rotation += toRadians(degrees);
 		this._recalculateMinMax();
 
 		return this;
@@ -104,7 +108,7 @@ class Rectangle {
 		return (b1 === b2) && (b2 === b3) && (b3 === b4);
 	}
 
-	static fromTopLeftAndSize(topLeft: Point, sizeX: number, sizeY: number, rotation: number = 0): Rectangle {
+	static fromTopLeftAndSize(topLeft: Point, sizeX: number, sizeY: number, degrees: number = 0): Rectangle {
 		const rect = new Rectangle(
 			topLeft,
 			new Point(topLeft.x + sizeX, topLeft.y),
@@ -112,7 +116,7 @@ class Rectangle {
 			new Point(topLeft.x, topLeft.y + sizeY)
 		);
 
-		rect.rotate(new Point(topLeft.x + sizeX / 2, topLeft.y + sizeY / 2), rotation);
+		rect.rotate(new Point(topLeft.x + sizeX / 2, topLeft.y + sizeY / 2), degrees);
 
 		return rect;
 	}
