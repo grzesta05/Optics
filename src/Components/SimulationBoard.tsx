@@ -196,18 +196,18 @@ export default function SimulationBoard({objectsToRender}: Props) {
 		context.font = "50px Arial";
 		context.fillStyle = particle.color;
 
-		// if(particle.direction == Direction.Left) {
-		// 	context.fillText(
-		// 		"←",
-		// 		...positionToCanvas(laserEnd.x, laserEnd.y, offset, sizeMultiplier)
-		// 	);
-		// 	return;
-		// }
-		//
-		// context.fillText(
-		// 	"→",
-		// 	...positionToCanvas(laserStart.x, laserStart.y, offset, sizeMultiplier)
-		// );
+		if (particle.direction == Direction.Left) {
+			context.fillText(
+				"←",
+				...positionToCanvas(laserEnd.x, laserEnd.y, offset, sizeMultiplier)
+			);
+			return;
+		}
+
+		context.fillText(
+			"→",
+			...positionToCanvas(laserStart.x, laserStart.y, offset, sizeMultiplier)
+		);
 	};
 
 	const drawCall = (image: CanvasImageSource, center: Point, rotation: number, sizeX: number, sizeY: number) => {

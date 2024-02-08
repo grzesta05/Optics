@@ -1,11 +1,12 @@
 import Rectangle from "@/classes/Rectangle.ts";
 import Point from "@/classes/Point.ts";
 import Sender from "@/model/SimulationObjects/Sender.ts";
-import { toDegrees } from "@/utils/algebra.ts";
+import { normalizeDegrees, toDegrees } from "@/utils/algebra.ts";
 import { Particle } from "@/classes/Lines/Particle.ts";
 
 export default class Laser extends Sender {
 	constructor(x: number, y: number, degrees: number) {
+		degrees = normalizeDegrees(degrees);
 		const rect = Rectangle.fromTopLeftAndSize(new Point(x, y), 100, 100, degrees);
 
 		const startPoint = Point.midpoint(rect.topRight, rect.bottomRight).add(new Point(0.1, 0).rotate(toDegrees(rect.rotation)));

@@ -1,14 +1,13 @@
 import Point from "@/classes/Point.ts";
-import { toDegrees } from "@/utils/algebra.ts";
+import { normalizeRadians, toDegrees } from "@/utils/algebra.ts";
 
 export enum Direction {
-	Right = -1,
-	Left = 1
+	Right = 1,
+	Left = -1
 }
 
 export const getDirection = (radians: number) => {
-	let degrees = toDegrees(radians);
-	degrees = degrees % 360;
+	let degrees = toDegrees(normalizeRadians(radians));
 	if (degrees === 90) {
 		degrees -= 0.0001;
 	} else if (degrees === 270) {
@@ -20,7 +19,7 @@ export const getDirection = (radians: number) => {
 	return Direction.Right;
 };
 
-export abstract class LinearFunction {
+export class LinearFunction {
 	public a: number;
 	public b: number;
 
@@ -29,7 +28,7 @@ export abstract class LinearFunction {
 
 	public direction: Direction;
 
-	protected constructor(a: number, b: number, direction: Direction = Direction.Left) {
+	constructor(a: number, b: number, direction: Direction = Direction.Left) {
 		this.a = a;
 		this.b = b;
 		this.direction = direction;
@@ -77,6 +76,10 @@ export abstract class LinearFunction {
 	}
 
 	public angleBetween(other: LinearFunction): number {
-		return Math.atan((other.a - this.a) / (1 + this.a * other.a));
+		let rad = Math.atan((other.a - this.a) / (1 + this.a * other.a));
+		if (rad < 0) {
+			rad += Math.PI;
+		}
+		return rad;
 	}
 }

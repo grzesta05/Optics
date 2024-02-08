@@ -4,7 +4,7 @@ import { Surface } from "@/classes/Lines/Surface.ts";
 import { calculateLinearFromPointAndAngle } from "@/utils/geometry.ts";
 import { toDegrees } from "@/utils/algebra.ts";
 
-const REFLECTIONS_LIMIT = 3;
+const REFLECTIONS_LIMIT = 2;
 
 export class Particle extends LinearFunction {
 	public color: string = "#FF0000";
@@ -43,17 +43,20 @@ export class Particle extends LinearFunction {
 			this.calculateLimits(others);
 		}
 
-		if (this.reflexionIndex > REFLECTIONS_LIMIT) {
+		if (this.reflexionIndex >= REFLECTIONS_LIMIT) {
 			this._hasReflectionsCalculated = true;
 			return;
 		}
 
 		if (this._currentReflectionSurface && this._currentReflectionPoint) {
-			const angleBetween = this.angleBetween(this._currentReflectionSurface);
+			let angleBetween = this.angleBetween(this._currentReflectionSurface);
+			console.log(toDegrees(this.angle), toDegrees(angleBetween));
+
 			// get the point a little bit earlier than the reflection point
 			let x = this.direction == Direction.Left ? 0.01 : -0.01;
 			const actualReflectionPoint = this._currentReflectionPoint.add(new Point(x, 0).rotate(toDegrees(this.angle)));
 			const childReflection = this.rotateWithAPoint(angleBetween * 2, actualReflectionPoint);
+
 			childReflection.reflexionIndex = this.reflexionIndex + 1;
 			if (childReflection.direction === Direction.Right) {
 				childReflection.lowerLimit = actualReflectionPoint.x;
@@ -123,10 +126,15 @@ export class Particle extends LinearFunction {
 	 */
 	public rotateWithAPoint(radians: number, point: Point): Particle {
 		const currentAngle = Math.atan(this.a);
-		const newAngle = currentAngle + radians;
+		let newAngle = currentAngle + radians;
 		const {x, y} = point;
 		const a = Math.tan(newAngle);
 		const b = y - a * x;
+		if (this.direction === Direction.Left) {
+			let originalDir = getDirection(newAngle);
+			return new Particle(a, b, originalDir === Direction.Left ? Direction.Right : Direction.Left);
+		}
+
 		return new Particle(a, b, getDirection(newAngle));
 	}
 }
