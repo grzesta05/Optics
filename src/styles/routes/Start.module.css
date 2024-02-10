@@ -1,9 +1,10 @@
 .simulationContainer {
 	width: min-content;
+	background-color: rgba(33, 33, 33, 1) !important;
+}
 
+.workSpace{
 	display: flex;
 	justify-content: center;
 	position: relative;
-
-	background-color: rgba(33, 33, 33, 1) !important;
 }

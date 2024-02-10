@@ -62,15 +62,18 @@ function Start() {
 
 	return (
 		<div data-testid="StartScreen" className={styles.simulationContainer}>
+
 			<button style={{position: "absolute", top: "0", left: "0"}}
 					onClick={() => setObjectsToRender(prev => prev)}>
 				Refresh
 			</button>
+			<BottomMenu onImport={loadJSONSimulationBoard} onExport={saveSimulationBoardJSON} />
+			<div className={styles.workSpace} >
 			<SimulationBoard
 				objectsToRender={objectsToRender}
 			/>
 			<SideWindow windows={[]}/>
-			<BottomMenu onImport={loadJSONSimulationBoard} onExport={saveSimulationBoardJSON} />
+			</div>
 		</div>
 	);
 }

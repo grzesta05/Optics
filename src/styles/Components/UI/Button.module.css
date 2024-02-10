@@ -1,14 +1,20 @@
 .button {
-	background-color: #ede9e8;
-	color: black;
+	background-color: #212121;
+	color: whitesmoke;
 	border: none;
 	padding: 10px 25px;
 	font-size: 1.2rem;
-	text-transform: uppercase;
+
 
 	&.menutab {
-		border-radius: 0 0 5px 10px;
-	}
+		 text-transform: capitalize full-width;
+		border-top: 5px solid #1a1a1a;
+		 transition: all 0.2s;
+	&:hover{
+		background-color: #1a1a1a;
+	 }
+	 }
+
 
 	&.rounded {
 		border-radius: 10px;
