@@ -17,7 +17,7 @@ type Props = {
 const MAX_SIZE_MULTIPLIER = 10;
 const MIN_SIZE_MULTIPLIER = 0.001;
 
-export default function SimulationBoard({objectsToRender}: Props) {
+export default function SimulationBoard({ objectsToRender }: Props) {
 	const [offset, setOffset] = useState<Point>(new Point(0, 0));
 	const [sizeMultiplier, setSizeMultiplier] = useState(1);
 	const [preMouseDownCursorPosition, setPreMouseDownCursorPosition] = useState({

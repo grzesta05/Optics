@@ -17,6 +17,11 @@ export default abstract class SimulationObject {
 		this._image.src = imagePath;
 	}
 
+	public loadImage(imagePath: string) {
+		this._image = new Image();
+		this._image.src = imagePath;
+	}
+
 	draw(drawCall: DrawCall) {
 		if (this._image.complete) {
 			drawCall(

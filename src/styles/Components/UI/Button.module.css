@@ -1,0 +1,29 @@
+.button {
+	background-color: #ede9e8;
+	color: black;
+	border: none;
+	padding: 10px 25px;
+	font-size: 1.2rem;
+	text-transform: uppercase;
+
+	&.menutab {
+		border-radius: 0 0 5px 10px;
+	}
+
+	&.rounded {
+		border-radius: 10px;
+	}
+
+	&.success {
+		background-color: #50c878;
+	}
+
+	&.error {
+		background-color: #f01e2c;
+		color: #eee;
+	}
+
+	&.danger {
+		background-color: #f4c430;
+	}
+}
