@@ -50,7 +50,7 @@ function Start() {
 			'data:text/plain;charset=utf-8,' + encodeURIComponent(simulationBoardJSON)
 		);
 
-		tmpElement.setAttribute('download', "niezesrajsiepl.json");
+		tmpElement.setAttribute('download', "export.json");
 
 		tmpElement.style.display = 'none';
 		document.body.appendChild(tmpElement);
