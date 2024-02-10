@@ -9,10 +9,11 @@ export type BottomMenuEventHandler = {
 
 export type Props = {
 	onImport: React.FormEventHandler,
-	onExport: React.MouseEventHandler
+	onExport: React.MouseEventHandler,
+	onRefresh: () => void
 };
 
-const UpperMenu = ({ onImport, onExport }: Props) => {
+const UpperMenu = ({ onImport, onExport, onRefresh }: Props) => {
 	const simulationBoardInput: React.MutableRefObject<HTMLInputElement | null> = useRef(null);
 
 	const bottomMenuEventHandlers: BottomMenuEventHandler[]  = [
@@ -25,8 +26,12 @@ const UpperMenu = ({ onImport, onExport }: Props) => {
 		{
 			buttonTitle: "export",
 			handler: onExport
+		},
+		{
+			buttonTitle: "refresh",
+			handler: onRefresh
 		}
-	];
+		];
 
 	const menuElements = bottomMenuEventHandlers.map(
 		({ buttonTitle, handler }, index) => (
