@@ -4,7 +4,7 @@ import SideWindow from "@/Components/SideWindow/SideWindow";
 import Laser from "@/model/SimulationObjects/Senders/Laser";
 import {FormEvent, useState} from "react";
 import SimulationObject from "@/model/SimulationObject.ts";
-import BottomMenu from "@components/BottomMenu.tsx";
+import UpperMenu from "@components/UpperMenu.tsx";
 
 function Start() {
 	const [objectsToRender, setObjectsToRender] = useState<Array<SimulationObject>>([
@@ -67,7 +67,7 @@ function Start() {
 					onClick={() => setObjectsToRender(prev => prev)}>
 				Refresh
 			</button>
-			<BottomMenu onImport={loadJSONSimulationBoard} onExport={saveSimulationBoardJSON} />
+			<UpperMenu onImport={loadJSONSimulationBoard} onExport={saveSimulationBoardJSON} />
 			<div className={styles.workSpace} >
 			<SimulationBoard
 				objectsToRender={objectsToRender}

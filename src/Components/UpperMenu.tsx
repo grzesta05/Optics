@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import styles from "@styles/Components/BottomMenu.module.css";
+import styles from "@styles/Components/UpperMenu.module.css";
 import Button from "@components/UI/Button.tsx";
 
 export type BottomMenuEventHandler = {
@@ -12,7 +12,7 @@ export type Props = {
 	onExport: React.MouseEventHandler
 };
 
-const BottomMenu = ({ onImport, onExport }: Props) => {
+const UpperMenu = ({ onImport, onExport }: Props) => {
 	const simulationBoardInput: React.MutableRefObject<HTMLInputElement | null> = useRef(null);
 
 	const bottomMenuEventHandlers: BottomMenuEventHandler[]  = [
@@ -49,4 +49,4 @@ const BottomMenu = ({ onImport, onExport }: Props) => {
 	);
 };
 
-export default BottomMenu;
+export default UpperMenu;
