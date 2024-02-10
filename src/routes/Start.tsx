@@ -8,8 +8,11 @@ import BottomMenu from "@components/BottomMenu.tsx";
 
 function Start() {
 	const [objectsToRender, setObjectsToRender] = useState<Array<SimulationObject>>([
-		new Laser(0, 0),
-		new Laser(200, 200),
+		new Laser(100, 200, 0),
+		new Laser(500, 250, 130),
+		new Laser(100, 10, 50),
+		new Laser(200, 400, 259),
+		new Laser(400, 300, 144),
 	]);
 
 	const loadJSONSimulationBoard = async (event: FormEvent) => {
@@ -59,6 +62,10 @@ function Start() {
 
 	return (
 		<div data-testid="StartScreen" className={styles.simulationContainer}>
+			<button style={{position: "absolute", top: "0", left: "0"}}
+					onClick={() => setObjectsToRender(prev => prev)}>
+				Refresh
+			</button>
 			<SimulationBoard
 				objectsToRender={objectsToRender}
 			/>
