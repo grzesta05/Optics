@@ -1,6 +1,6 @@
 import { ReactElement } from "react";
 
-export default interface ISideWindowTab {
-  component: ReactElement;
-  header: string;
+export default interface SideWindowTab {
+	component: ReactElement;
+	header: string;
 }
