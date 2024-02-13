@@ -1,5 +1,7 @@
+import SimulationObject from "@/model/SimulationObject";
+
 type Props = {
-	object: object;
+	object: SimulationObject | undefined;
 };
 enum INPUT_TYPES {
 	range = "range",

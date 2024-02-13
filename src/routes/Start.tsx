@@ -69,10 +69,8 @@ function Start() {
 			>
 				Refresh
 			</button>
-			<SimulationBoard objectsToRender={objectsToRender} />
-			<SideWindow
-				windows={[{ header: "Properties", component: <PropertiesTab object={objectsToRender[0]} /> }]}
-			/>
+			<SimulationBoard selectObject={setSelectedObject} objectsToRender={objectsToRender} />
+			<SideWindow windows={[{ header: "Properties", component: <PropertiesTab object={selectedObject} /> }]} />
 			<BottomMenu onImport={loadJSONSimulationBoard} onExport={saveSimulationBoardJSON} />
 		</div>
 	);

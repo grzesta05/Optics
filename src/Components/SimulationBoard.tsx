@@ -1,5 +1,5 @@
 import SimulationObject from "@/model/SimulationObject";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useMemo, useRef, useState } from "react";
 import styles from "@styles/Components/SimulationBoard.module.css";
 import Point from "@/classes/Point.ts";
 import Rectangle from "@/classes/Rectangle.ts";
@@ -12,12 +12,13 @@ import { Direction } from "@/classes/Lines/LinearFunction.ts";
 
 type Props = {
 	objectsToRender: Array<SimulationObject>;
+	selectObject: Dispatch<SetStateAction<SimulationObject | undefined>>;
 };
 
 const MAX_SIZE_MULTIPLIER = 10;
 const MIN_SIZE_MULTIPLIER = 0.001;
 
-export default function SimulationBoard({ objectsToRender }: Props) {
+export default function SimulationBoard({ objectsToRender, selectObject }: Props) {
 	const [offset, setOffset] = useState<Point>(new Point(0, 0));
 	const [sizeMultiplier, setSizeMultiplier] = useState(1);
 	const [preMouseDownCursorPosition, setPreMouseDownCursorPosition] = useState({
@@ -39,14 +40,9 @@ export default function SimulationBoard({ objectsToRender }: Props) {
 		console.log(canvasSize);
 	}, []);
 
-	const possibleLimits = useMemo(
-		() => getAllSurfaces(objectsToRender.map((obj) => obj.bounds)),
-		[objectsToRender]
-	);
+	const possibleLimits = useMemo(() => getAllSurfaces(objectsToRender.map((obj) => obj.bounds)), [objectsToRender]);
 
-	const dragStartHandler: React.MouseEventHandler<HTMLCanvasElement> = (
-		event
-	) => {
+	const dragStartHandler: React.MouseEventHandler<HTMLCanvasElement> = (event) => {
 		setIsMouseClicked(true);
 		setPreMouseDownCursorPosition(offset);
 		setInitialDragPosition({
@@ -56,34 +52,26 @@ export default function SimulationBoard({ objectsToRender }: Props) {
 	};
 	const dragOnHanlder: React.MouseEventHandler<HTMLCanvasElement> = (event) => {
 		if (isMouseClicked) {
-			setOffset(new Point(
-				preMouseDownCursorPosition.x +
-				(initialDragPosition.x - event.clientX) / sizeMultiplier,
-				preMouseDownCursorPosition.y +
-				(event.clientY - initialDragPosition.y) / sizeMultiplier,
-			));
+			setOffset(
+				new Point(
+					preMouseDownCursorPosition.x + (initialDragPosition.x - event.clientX) / sizeMultiplier,
+					preMouseDownCursorPosition.y + (event.clientY - initialDragPosition.y) / sizeMultiplier
+				)
+			);
 		}
 	};
-	const wheelResizeHandle: React.WheelEventHandler<HTMLCanvasElement> = (
-		event
-	) => {
+	const wheelResizeHandle: React.WheelEventHandler<HTMLCanvasElement> = (event) => {
 		const canvasPosition = canvasRef.current?.getBoundingClientRect();
 		const x = event.clientX - (canvasPosition?.left ?? 0);
 		const y = event.clientY - (canvasPosition?.top ?? 0);
 
-		const mousePosition = new Point(
-			x / sizeMultiplier + offset.x,
-			offset.y - y / sizeMultiplier
-		);
+		const mousePosition = new Point(x / sizeMultiplier + offset.x, offset.y - y / sizeMultiplier);
 		let newMultiplier = sizeMultiplier + event.deltaY / -1000;
 		if (newMultiplier < MIN_SIZE_MULTIPLIER) newMultiplier = MIN_SIZE_MULTIPLIER;
 		if (newMultiplier > MAX_SIZE_MULTIPLIER) newMultiplier = MAX_SIZE_MULTIPLIER;
 
 		// move the offset so that the mouse position stays the same
-		const newMousePosition = new Point(
-			x / newMultiplier + offset.x,
-			offset.y - y / newMultiplier
-		);
+		const newMousePosition = new Point(x / newMultiplier + offset.x, offset.y - y / newMultiplier);
 		console.log(offset);
 		const newOffset = offset.add(mousePosition.subtract(newMousePosition));
 		setOffset(newOffset);
@@ -197,17 +185,11 @@ export default function SimulationBoard({ objectsToRender }: Props) {
 		context.fillStyle = particle.color;
 
 		if (particle.direction == Direction.Left) {
-			context.fillText(
-				"←",
-				...positionToCanvas(laserEnd.x, laserEnd.y, offset, sizeMultiplier)
-			);
+			context.fillText("←", ...positionToCanvas(laserEnd.x, laserEnd.y, offset, sizeMultiplier));
 			return;
 		}
 
-		context.fillText(
-			"→",
-			...positionToCanvas(laserStart.x, laserStart.y, offset, sizeMultiplier)
-		);
+		context.fillText("→", ...positionToCanvas(laserStart.x, laserStart.y, offset, sizeMultiplier));
 	};
 
 	const drawCall = (image: CanvasImageSource, center: Point, rotation: number, sizeX: number, sizeY: number) => {
@@ -218,7 +200,8 @@ export default function SimulationBoard({ objectsToRender }: Props) {
 		const y = topLeft.y;
 
 		if (toDegrees(rotation) / 360 === 0) {
-			context?.drawImage(image,
+			context?.drawImage(
+				image,
 				...positionToCanvas(x, y, offset, sizeMultiplier),
 				sizeX * sizeMultiplier,
 				sizeY * sizeMultiplier
@@ -232,9 +215,10 @@ export default function SimulationBoard({ objectsToRender }: Props) {
 			context?.fill();
 
 			context?.rotate(rotation);
-			context?.drawImage(image,
-				-sizeX * sizeMultiplier / 2,
-				-sizeY * sizeMultiplier / 2,
+			context?.drawImage(
+				image,
+				(-sizeX * sizeMultiplier) / 2,
+				(-sizeY * sizeMultiplier) / 2,
 				sizeX * sizeMultiplier,
 				sizeY * sizeMultiplier
 			);
@@ -242,9 +226,28 @@ export default function SimulationBoard({ objectsToRender }: Props) {
 		}
 	};
 
+	const clickOnObject = (e: any) => {
+		const position = {
+			x: e.clientX - e.target.getBoundingClientRect().left + offset.x,
+			y: e.clientY - e.target.getBoundingClientRect().top + offset.y,
+		};
+		selectObject(
+			objectsToRender.find((object) => {
+				if (
+					object.bounds.minX < position.x &&
+					object.bounds.maxX > position.x &&
+					object.bounds.minY < position.y &&
+					object.bounds.maxY > position.y
+				) {
+					return object;
+				}
+			})
+		);
+	};
 	return (
 		<canvas
 			ref={canvasRef}
+			onClick={clickOnObject}
 			onWheel={wheelResizeHandle}
 			onMouseDown={dragStartHandler}
 			onMouseMove={dragOnHanlder}
