@@ -2,11 +2,13 @@ import styles from "@/styles/routes/Start.module.css";
 import SimulationBoard from "@/Components/SimulationBoard";
 import SideWindow from "@/Components/SideWindow/SideWindow";
 import Laser from "@/model/SimulationObjects/Senders/Laser";
-import {FormEvent, useState} from "react";
+import { FormEvent, useState } from "react";
 import SimulationObject from "@/model/SimulationObject.ts";
 import BottomMenu from "@components/BottomMenu.tsx";
+import PropertiesTab from "@/Components/SideWindow/SideWindowTabs/PropertiesTab";
 
 function Start() {
+	const [selectedObject, setSelectedObject] = useState<SimulationObject>();
 	const [objectsToRender, setObjectsToRender] = useState<Array<SimulationObject>>([
 		new Laser(100, 200, 0),
 		new Laser(500, 250, 130),
@@ -27,16 +29,18 @@ function Start() {
 		try {
 			const uploadedObjects = JSON.parse(await uploadedFile.text()) as Array<SimulationObject>;
 
-			setObjectsToRender(uploadedObjects.map((boardObject) => {
-				const boardObjectCpy = structuredClone(boardObject);
+			setObjectsToRender(
+				uploadedObjects.map((boardObject) => {
+					const boardObjectCpy = structuredClone(boardObject);
 
-				boardObjectCpy.loadImage(boardObject.imagePath);
+					boardObjectCpy.loadImage(boardObject.imagePath);
 
-				return boardObjectCpy;
-			}));
+					return boardObjectCpy;
+				})
+			);
 		} catch (e) {
 			// Show notification later
-			console.error('error', e);
+			console.error("error", e);
 		}
 	};
 
@@ -45,14 +49,11 @@ function Start() {
 
 		const tmpElement = document.createElement("a");
 
-		tmpElement.setAttribute(
-			'href',
-			'data:text/plain;charset=utf-8,' + encodeURIComponent(simulationBoardJSON)
-		);
+		tmpElement.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent(simulationBoardJSON));
 
-		tmpElement.setAttribute('download', "niezesrajsiepl.json");
+		tmpElement.setAttribute("download", "niezesrajsiepl.json");
 
-		tmpElement.style.display = 'none';
+		tmpElement.style.display = "none";
 		document.body.appendChild(tmpElement);
 
 		tmpElement.click();
@@ -62,14 +63,16 @@ function Start() {
 
 	return (
 		<div data-testid="StartScreen" className={styles.simulationContainer}>
-			<button style={{position: "absolute", top: "0", left: "0"}}
-					onClick={() => setObjectsToRender(prev => prev)}>
+			<button
+				style={{ position: "absolute", top: "0", left: "0" }}
+				onClick={() => setObjectsToRender((prev) => prev)}
+			>
 				Refresh
 			</button>
-			<SimulationBoard
-				objectsToRender={objectsToRender}
+			<SimulationBoard objectsToRender={objectsToRender} />
+			<SideWindow
+				windows={[{ header: "Properties", component: <PropertiesTab object={objectsToRender[0]} /> }]}
 			/>
-			<SideWindow windows={[]}/>
 			<BottomMenu onImport={loadJSONSimulationBoard} onExport={saveSimulationBoardJSON} />
 		</div>
 	);
