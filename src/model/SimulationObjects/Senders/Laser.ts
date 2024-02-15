@@ -5,16 +5,18 @@ import { normalizeDegrees, toDegrees } from "@/utils/algebra.ts";
 import { Particle } from "@/classes/Lines/Particle.ts";
 
 export default class Laser extends Sender {
+	public static imagePath = "/img/laser.png";
+
 	constructor(x: number, y: number, degrees: number) {
 		degrees = normalizeDegrees(degrees);
 		const rect = Rectangle.fromTopLeftAndSize(new Point(x, y), 100, 100, degrees);
 
-		const startPoint = Point.midpoint(rect.topRight, rect.bottomRight).add(new Point(0.1, 0).rotate(toDegrees(rect.rotation)));
+		const startPoint = Point.midpoint(rect.topRight, rect.bottomRight).add(
+			new Point(0.1, 0).rotate(toDegrees(rect.rotation))
+		);
 
 		// colors that make up white light
-		const colors = [
-			"#FF0000",
-		];
+		const colors = ["#FF0000"];
 		let centerX = startPoint.x;
 		let lasers: Particle[] = [];
 
@@ -32,11 +34,7 @@ export default class Laser extends Sender {
 			lasers.push(laser);
 		}
 
-		super(
-			rect,
-			"/img/laser.png",
-			lasers,
-		);
+		super(rect, Laser.imagePath, lasers);
 		console.log("Created new Laser");
 	}
 }
