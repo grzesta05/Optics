@@ -77,6 +77,16 @@ class Rectangle {
 		return this.sizeX() * this.sizeY();
 	}
 
+	moveBy(delta: Point): Rectangle {
+		this.topLeft = this.topLeft.add(delta);
+		this.topRight = this.topRight.add(delta);
+		this.bottomRight = this.bottomRight.add(delta);
+		this.bottomLeft = this.bottomLeft.add(delta);
+		this._recalculateMinMax();
+
+		return this;
+	}
+
 	intersectsOrContains(other: Rectangle): boolean {
 		return (
 			this.contains(other.topLeft) ||

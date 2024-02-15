@@ -1,27 +1,42 @@
-import { SimulationObjectProperties } from "@/properties/SimulationObjectProperties/SimulationProperties";
+import {
+	SimulationObjectProperties,
+	SimulationObjectPropertiesType
+} from "@/properties/SimulationObjectProperties/SimulationProperties";
 
 type Props = {
-	properties: object;
-	setProperties: (arg0: object) => void;
+	properties: SimulationObjectPropertiesType;
+	setProperties: (arg0: SimulationObjectPropertiesType) => void;
 };
 
-export default function PropertiesTab({ properties, setProperties }: Props) {
+export default function PropertiesTab({properties, setProperties}: Props) {
 	return (
 		<ul>
 			{Object.entries(SimulationObjectProperties).map((entry) => {
+				const name = entry[0] as keyof SimulationObjectPropertiesType;
+				const valueOptions = entry[1];
+				const value = properties[name];
 				return (
-					<li key={entry[0]}>
-						<label htmlFor={entry[0]}>{entry[0]}</label>
+					<li key={name}>
+						<label htmlFor={name}>{name}</label>
 						<input
-							step={"any"}
-							min={entry[1].minBound}
-							max={entry[1].maxBound}
-							type={entry[1].inputType}
-							id={entry[0]}
-							value={properties[entry[0]].toFixed(2)}
-							onChange={(e) =>
-								setProperties({ ...properties, [entry[0]]: Number.parseFloat(e.target.value) })
-							}
+							step={valueOptions.step ? valueOptions.step : 0.01}
+							min={valueOptions.minBound}
+							max={valueOptions.maxBound}
+							type={valueOptions.inputType}
+							id={name}
+							value={value.toFixed(2)}
+							onChange={(e) => {
+								let newValue = Number.parseFloat(e.target.value);
+								newValue = Math.max(newValue, valueOptions.minBound);
+								newValue = Math.min(newValue, valueOptions.maxBound);
+								newValue = Number.isNaN(newValue) ? 0 : newValue;
+								if (valueOptions.step) {
+									newValue = Math.round(newValue / valueOptions.step) * valueOptions.step;
+								}
+								console.log(value, newValue);
+								if (newValue === value) return;
+								setProperties({...properties, [name]: newValue});
+							}}
 						/>
 					</li>
 				);

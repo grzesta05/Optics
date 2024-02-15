@@ -10,6 +10,8 @@ export default abstract class Sender extends SimulationObject {
 		this.particles = lasers;
 		console.log("Created new Sender with bounds");
 	}
+
+	abstract recalculateParticles(): void;
 }
 
 export function isSender(object: SimulationObject): object is Sender {

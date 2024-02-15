@@ -4,7 +4,7 @@ import styles from "@styles/Components/SimulationBoard.module.css";
 import Point from "@/classes/Point.ts";
 import Rectangle from "@/classes/Rectangle.ts";
 import { isSender } from "@/model/SimulationObjects/Sender.ts";
-import { positionToCanvas } from "@/utils/canvas.ts";
+import { canvasToPosition, positionToCanvas } from "@/utils/canvas.ts";
 import { toDegrees } from "@/utils/algebra.ts";
 import { getAllSurfaces } from "@/utils/geometry.ts";
 import { Particle } from "@/classes/Lines/Particle.ts";
@@ -18,7 +18,7 @@ type Props = {
 const MAX_SIZE_MULTIPLIER = 10;
 const MIN_SIZE_MULTIPLIER = 0.001;
 
-export default function SimulationBoard({ objectsToRender, selectObject }: Props) {
+export default function SimulationBoard({objectsToRender, selectObject}: Props) {
 	const [offset, setOffset] = useState<Point>(new Point(0, 0));
 	const [sizeMultiplier, setSizeMultiplier] = useState(1);
 	const [preMouseDownCursorPosition, setPreMouseDownCursorPosition] = useState({
@@ -36,11 +36,18 @@ export default function SimulationBoard({ objectsToRender, selectObject }: Props
 		height: window.innerHeight / 2,
 	};
 
-	useEffect(() => {
-		console.log(canvasSize);
-	}, []);
-
 	const possibleLimits = useMemo(() => getAllSurfaces(objectsToRender.map((obj) => obj.bounds)), [objectsToRender]);
+
+	useEffect(() => {
+		console.log("resetting calculations, objectsToRender changed");
+		for (let object of objectsToRender) {
+			if (isSender(object)) {
+				for (let particle of object.particles) {
+					particle.resetCalculations();
+				}
+			}
+		}
+	}, [objectsToRender]);
 
 	const dragStartHandler: React.MouseEventHandler<HTMLCanvasElement> = (event) => {
 		setIsMouseClicked(true);
@@ -72,7 +79,6 @@ export default function SimulationBoard({ objectsToRender, selectObject }: Props
 
 		// move the offset so that the mouse position stays the same
 		const newMousePosition = new Point(x / newMultiplier + offset.x, offset.y - y / newMultiplier);
-		console.log(offset);
 		const newOffset = offset.add(mousePosition.subtract(newMousePosition));
 		setOffset(newOffset);
 		setSizeMultiplier(newMultiplier);
@@ -124,7 +130,6 @@ export default function SimulationBoard({ objectsToRender, selectObject }: Props
 						particle.calculateReflections(possibleLimits, null);
 					}
 
-					console.log(particle.childReflections);
 					for (const child of particle.childReflections) {
 						drawLaser(child, renderBounds, context);
 					}
@@ -140,8 +145,7 @@ export default function SimulationBoard({ objectsToRender, selectObject }: Props
 			}
 
 			// draw object bounds - mainly for debugging purposes
-			console.log(object.bounds);
-			const bounds = (object.bounds as !Rectangle).points();
+			const bounds = object.bounds.points();
 			context.strokeStyle = "yellow";
 			context.lineWidth = sizeMultiplier;
 			for (let i = 0; i < 4; i++) {
@@ -228,20 +232,14 @@ export default function SimulationBoard({ objectsToRender, selectObject }: Props
 	};
 
 	const clickOnObject = (e: any) => {
-		const position = {
-			x: e.clientX - e.target.getBoundingClientRect().left + offset.x,
-			y: e.clientY - e.target.getBoundingClientRect().top + offset.y,
+		const mousePosition = {
+			x: e.clientX - e.target.getBoundingClientRect().left,
+			y: e.clientY - e.target.getBoundingClientRect().top,
 		};
+		const position = new Point(...canvasToPosition(mousePosition.x, mousePosition.y, offset, sizeMultiplier));
 		selectObject(
 			objectsToRender.find((object) => {
-				if (
-					object.bounds.minX < position.x &&
-					object.bounds.maxX > position.x &&
-					object.bounds.minY < position.y &&
-					object.bounds.maxY > position.y
-				) {
-					return object;
-				}
+				return object.bounds.contains(position);
 			})
 		);
 	};

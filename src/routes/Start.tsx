@@ -7,8 +7,8 @@ import SimulationObject from "@/model/SimulationObject.ts";
 import BottomMenu from "@components/BottomMenu.tsx";
 import PropertiesTab from "@/Components/SideWindow/SideWindowTabs/PropertiesTab";
 import {
-	mapPropertiesToSimulationObject,
-	mapSimulationObjectToProperties,
+	changeSimulationObjectByProperties,
+	mapSimulationObjectToProperties, SimulationObjectPropertiesType,
 } from "@/properties/SimulationObjectProperties/SimulationProperties";
 
 function Start() {
@@ -68,12 +68,12 @@ function Start() {
 	return (
 		<div data-testid="StartScreen" className={styles.simulationContainer}>
 			<button
-				style={{ position: "absolute", top: "0", left: "0" }}
+				style={{position: "absolute", top: "0", left: "0"}}
 				onClick={() => setObjectsToRender((prev) => prev)}
 			>
 				Refresh
 			</button>
-			<SimulationBoard selectObject={setSelectedObject} objectsToRender={objectsToRender} />
+			<SimulationBoard selectObject={setSelectedObject} objectsToRender={objectsToRender}/>
 			<SideWindow
 				windows={[
 					{
@@ -82,8 +82,8 @@ function Start() {
 							selectedObject != undefined ? (
 								<PropertiesTab
 									properties={mapSimulationObjectToProperties(selectedObject)}
-									setProperties={(properties) => {
-										const newObject = mapPropertiesToSimulationObject(selectedObject, properties);
+									setProperties={(properties: SimulationObjectPropertiesType) => {
+										const newObject = changeSimulationObjectByProperties(selectedObject, properties);
 										const indexOfTheOldObject = objectsToRender.findIndex(
 											(object) => object == selectedObject
 										);
@@ -101,7 +101,7 @@ function Start() {
 					},
 				]}
 			/>
-			<BottomMenu onImport={loadJSONSimulationBoard} onExport={saveSimulationBoardJSON} />
+			<BottomMenu onImport={loadJSONSimulationBoard} onExport={saveSimulationBoardJSON}/>
 		</div>
 	);
 }
