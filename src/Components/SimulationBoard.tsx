@@ -140,7 +140,8 @@ export default function SimulationBoard({ objectsToRender, selectObject }: Props
 			}
 
 			// draw object bounds - mainly for debugging purposes
-			const bounds = object.bounds.points();
+			console.log(object.bounds);
+			const bounds = (object.bounds as !Rectangle).points();
 			context.strokeStyle = "yellow";
 			context.lineWidth = sizeMultiplier;
 			for (let i = 0; i < 4; i++) {

@@ -6,6 +6,10 @@ import { FormEvent, useState } from "react";
 import SimulationObject from "@/model/SimulationObject.ts";
 import BottomMenu from "@components/BottomMenu.tsx";
 import PropertiesTab from "@/Components/SideWindow/SideWindowTabs/PropertiesTab";
+import {
+	mapPropertiesToSimulationObject,
+	mapSimulationObjectToProperties,
+} from "@/properties/SimulationObjectProperties/SimulationProperties";
 
 function Start() {
 	const [selectedObject, setSelectedObject] = useState<SimulationObject>();
@@ -70,7 +74,33 @@ function Start() {
 				Refresh
 			</button>
 			<SimulationBoard selectObject={setSelectedObject} objectsToRender={objectsToRender} />
-			<SideWindow windows={[{ header: "Properties", component: <PropertiesTab object={selectedObject} /> }]} />
+			<SideWindow
+				windows={[
+					{
+						header: "Properties",
+						component:
+							selectedObject != undefined ? (
+								<PropertiesTab
+									properties={mapSimulationObjectToProperties(selectedObject)}
+									setProperties={(properties) => {
+										const newObject = mapPropertiesToSimulationObject(selectedObject, properties);
+										const indexOfTheOldObject = objectsToRender.findIndex(
+											(object) => object == selectedObject
+										);
+										setSelectedObject(newObject as SimulationObject);
+										setObjectsToRender((old) => {
+											old[indexOfTheOldObject] = newObject as SimulationObject;
+											console.log(old);
+											return [...old] as SimulationObject[];
+										});
+									}}
+								/>
+							) : (
+								<></>
+							),
+					},
+				]}
+			/>
 			<BottomMenu onImport={loadJSONSimulationBoard} onExport={saveSimulationBoardJSON} />
 		</div>
 	);

@@ -1,25 +1,11 @@
-import SimulationObject from "@/model/SimulationObject";
+import { SimulationObjectProperties } from "@/properties/SimulationObjectProperties/SimulationProperties";
 
 type Props = {
-	object: SimulationObject | undefined;
-};
-enum INPUT_TYPES {
-	range = "range",
-	number = "number",
-}
-type Property = {
-	inputType: INPUT_TYPES;
-	minBound: number;
-	maxBound: number;
+	properties: object;
+	setProperties: (arg0: object) => void;
 };
 
-export default function PropertiesTab({ object }: Props) {
-	console.log(object);
-	const SimulationObjectProperties = {
-		x: { inputType: INPUT_TYPES.number, minBound: -Infinity, maxBound: Infinity },
-		y: { inputType: INPUT_TYPES.number, minBound: -Infinity, maxBound: Infinity },
-		rotate: { inputType: INPUT_TYPES.range, minBound: 0, maxBound: 360 },
-	};
+export default function PropertiesTab({ properties, setProperties }: Props) {
 	return (
 		<ul>
 			{Object.entries(SimulationObjectProperties).map((entry) => {
@@ -27,10 +13,15 @@ export default function PropertiesTab({ object }: Props) {
 					<li key={entry[0]}>
 						<label htmlFor={entry[0]}>{entry[0]}</label>
 						<input
+							step={"any"}
 							min={entry[1].minBound}
 							max={entry[1].maxBound}
 							type={entry[1].inputType}
 							id={entry[0]}
+							value={properties[entry[0]].toFixed(2)}
+							onChange={(e) =>
+								setProperties({ ...properties, [entry[0]]: Number.parseFloat(e.target.value) })
+							}
 						/>
 					</li>
 				);
