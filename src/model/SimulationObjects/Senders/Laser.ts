@@ -33,8 +33,31 @@ export default class Laser extends Sender {
 
 			lasers.push(laser);
 		}
+    
+		super(
+			rect,
+			"/img/laser.png",
+			lasers,
+		);
+	}
 
-		super(rect, Laser.imagePath, lasers);
-		console.log("Created new Laser");
+	public recalculateParticles() {
+		const startPoint = Point.midpoint(this.bounds.topRight, this.bounds.bottomRight).add(new Point(0.1, 0).rotate(toDegrees(this.bounds.rotation)));
+
+		let newParticles: Particle[] = [];
+		for (const particle of this.particles) {
+			const newParticle = particle.cloneWithNewPointAndAngle(startPoint, this.bounds.rotation);
+			let degrees = toDegrees(this.bounds.rotation) % 360;
+			if (degrees < 0) {
+				degrees += 360;
+			}
+			if (degrees > 90 && degrees < 270) {
+				newParticle.upperLimit = startPoint.x;
+			} else {
+				newParticle.lowerLimit = startPoint.x;
+			}
+			newParticles.push(newParticle);
+		}
+		this.particles = newParticles;
 	}
 }

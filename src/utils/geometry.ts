@@ -19,7 +19,10 @@ export const getRectangleSurfaces: (rect: Rectangle) => Surface[] = (rect) => {
 
 export const calculateLinearFromPointAndAngle = (point: Point, radians: number) => {
 	// we invert the angle because the y-axis is inverted in the canvas
-	let degrees = toDegrees(radians);
+	let degrees = toDegrees(radians) % 360;
+	if (degrees < 0) {
+		degrees += 360;
+	}
 	if (degrees === 90) {
 		degrees -= 0.0001;
 	} else if (degrees === 270) {

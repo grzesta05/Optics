@@ -4,7 +4,7 @@ import { Surface } from "@/classes/Lines/Surface.ts";
 import { calculateLinearFromPointAndAngle } from "@/utils/geometry.ts";
 import { toDegrees } from "@/utils/algebra.ts";
 
-const REFLECTIONS_LIMIT = 2;
+const REFLECTIONS_LIMIT = 3;
 
 export class Particle extends LinearFunction {
 	public color: string = "#FF0000";
@@ -30,6 +30,19 @@ export class Particle extends LinearFunction {
 
 	private _currentReflectionSurface: Surface | null = null;
 	private _currentReflectionPoint: Point | null = null;
+
+	public resetCalculations(): void {
+		this._hasReflectionsCalculated = false;
+		this._hasLimitsCalculated = false;
+		this.childReflections = [];
+		this._currentReflectionSurface = null;
+		this._currentReflectionPoint = null;
+		if (this.direction === Direction.Left) {
+			this.lowerLimit = -Infinity;
+		} else {
+			this.upperLimit = Infinity;
+		}
+	}
 
 	/**
 	 * Calculate the reflections of the light particle
@@ -136,5 +149,10 @@ export class Particle extends LinearFunction {
 		}
 
 		return new Particle(a, b, getDirection(newAngle));
+	}
+
+	public cloneWithNewPointAndAngle(point: Point, radians: number): Particle {
+		const {a, b, direction} = calculateLinearFromPointAndAngle(point, radians);
+		return new Particle(a, b, direction, this.reflexionIndex, this.color, this.intensity);
 	}
 }

@@ -7,6 +7,7 @@ import SimulationObject from "@/model/SimulationObject.ts";
 import UpperMenu from "@components/UpperMenu.tsx";
 
 function Start() {
+	const [selectedObject, setSelectedObject] = useState<SimulationObject>();
 	const [objectsToRender, setObjectsToRender] = useState<Array<SimulationObject>>([
 		new Laser(100, 200, 0),
 		new Laser(500, 250, 130),
@@ -61,13 +62,37 @@ function Start() {
 
 	return (
 		<div data-testid="StartScreen" className={styles.simulationContainer}>
-			<UpperMenu onImport={loadJSONSimulationBoard} onExport={saveSimulationBoardJSON} onRefresh={() => setObjectsToRender(prev => prev)} />
+      <UpperMenu onImport={loadJSONSimulationBoard} onExport={saveSimulationBoardJSON} onRefresh={() => setObjectsToRender(prev => prev)} />
 			<div className={styles.workSpace} >
-			<SimulationBoard
-				objectsToRender={objectsToRender}
+			<SimulationBoard selectObject={setSelectedObject} objectsToRender={objectsToRender}/>
+			<SideWindow
+				windows={[
+					{
+						header: "Properties",
+						component:
+							selectedObject != undefined ? (
+								<PropertiesTab
+									properties={mapSimulationObjectToProperties(selectedObject)}
+									setProperties={(properties: SimulationObjectPropertiesType) => {
+										const newObject = changeSimulationObjectByProperties(selectedObject, properties);
+										const indexOfTheOldObject = objectsToRender.findIndex(
+											(object) => object == selectedObject
+										);
+										setSelectedObject(newObject as SimulationObject);
+										setObjectsToRender((old) => {
+											old[indexOfTheOldObject] = newObject as SimulationObject;
+											console.log(old);
+											return [...old] as SimulationObject[];
+										});
+									}}
+								/>
+							) : (
+								<></>
+							),
+					},
+				]}
 			/>
-			<SideWindow windows={[]}/>
-			</div>
+      </div>
 		</div>
 	);
 }
