@@ -24,13 +24,7 @@ export default abstract class SimulationObject {
 
 	draw(drawCall: DrawCall) {
 		if (this._image.complete) {
-			drawCall(
-				this._image,
-				this.bounds.center(),
-				this.bounds.rotation,
-				this.bounds.sizeX(),
-				this.bounds.sizeY()
-			);
+			drawCall(this._image, this.bounds.center(), this.bounds.rotation, this.bounds.sizeX(), this.bounds.sizeY());
 		} else {
 			this._image.onload = () => {
 				drawCall(

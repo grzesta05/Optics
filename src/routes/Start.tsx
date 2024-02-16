@@ -4,12 +4,7 @@ import SideWindow from "@/Components/SideWindow/SideWindow";
 import Laser from "@/model/SimulationObjects/Senders/Laser";
 import { FormEvent, useState } from "react";
 import SimulationObject from "@/model/SimulationObject.ts";
-import BottomMenu from "@components/BottomMenu.tsx";
-import PropertiesTab from "@/Components/SideWindow/SideWindowTabs/PropertiesTab";
-import {
-	changeSimulationObjectByProperties,
-	mapSimulationObjectToProperties, SimulationObjectPropertiesType,
-} from "@/properties/SimulationObjectProperties/SimulationProperties";
+import UpperMenu from "@components/UpperMenu.tsx";
 
 function Start() {
 	const [selectedObject, setSelectedObject] = useState<SimulationObject>();
@@ -55,7 +50,7 @@ function Start() {
 
 		tmpElement.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent(simulationBoardJSON));
 
-		tmpElement.setAttribute("download", "niezesrajsiepl.json");
+		tmpElement.setAttribute('download', "export.json");
 
 		tmpElement.style.display = "none";
 		document.body.appendChild(tmpElement);
@@ -67,12 +62,8 @@ function Start() {
 
 	return (
 		<div data-testid="StartScreen" className={styles.simulationContainer}>
-			<button
-				style={{position: "absolute", top: "0", left: "0"}}
-				onClick={() => setObjectsToRender((prev) => prev)}
-			>
-				Refresh
-			</button>
+      <UpperMenu onImport={loadJSONSimulationBoard} onExport={saveSimulationBoardJSON} onRefresh={() => setObjectsToRender(prev => prev)} />
+			<div className={styles.workSpace} >
 			<SimulationBoard selectObject={setSelectedObject} objectsToRender={objectsToRender}/>
 			<SideWindow
 				windows={[
@@ -101,7 +92,7 @@ function Start() {
 					},
 				]}
 			/>
-			<BottomMenu onImport={loadJSONSimulationBoard} onExport={saveSimulationBoardJSON}/>
+      </div>
 		</div>
 	);
 }
