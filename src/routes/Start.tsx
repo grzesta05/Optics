@@ -2,7 +2,7 @@ import styles from "@/styles/routes/Start.module.css";
 import SimulationBoard from "@/Components/SimulationBoard";
 import SideWindow from "@/Components/SideWindow/SideWindow";
 import Laser from "@/model/SimulationObjects/Senders/Laser";
-import {FormEvent, useState} from "react";
+import { FormEvent, useState } from "react";
 import SimulationObject from "@/model/SimulationObject.ts";
 import UpperMenu from "@components/UpperMenu.tsx";
 
@@ -27,16 +27,18 @@ function Start() {
 		try {
 			const uploadedObjects = JSON.parse(await uploadedFile.text()) as Array<SimulationObject>;
 
-			setObjectsToRender(uploadedObjects.map((boardObject) => {
-				const boardObjectCpy = structuredClone(boardObject);
+			setObjectsToRender(
+				uploadedObjects.map((boardObject) => {
+					const boardObjectCpy = structuredClone(boardObject);
 
-				boardObjectCpy.loadImage(boardObject.imagePath);
+					boardObjectCpy.loadImage(boardObject.imagePath);
 
-				return boardObjectCpy;
-			}));
+					return boardObjectCpy;
+				})
+			);
 		} catch (e) {
 			// Show notification later
-			console.error('error', e);
+			console.error("error", e);
 		}
 	};
 
@@ -45,14 +47,11 @@ function Start() {
 
 		const tmpElement = document.createElement("a");
 
-		tmpElement.setAttribute(
-			'href',
-			'data:text/plain;charset=utf-8,' + encodeURIComponent(simulationBoardJSON)
-		);
+		tmpElement.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent(simulationBoardJSON));
 
 		tmpElement.setAttribute('download', "export.json");
 
-		tmpElement.style.display = 'none';
+		tmpElement.style.display = "none";
 		document.body.appendChild(tmpElement);
 
 		tmpElement.click();
