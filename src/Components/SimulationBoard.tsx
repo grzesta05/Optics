@@ -13,14 +13,16 @@ import { Direction } from "@/classes/Lines/LinearFunction.ts";
 type Props = {
 	objectsToRender: Array<SimulationObject>;
 	selectObject: Dispatch<SetStateAction<SimulationObject | undefined>>;
+	offset: Point,
+	setOffset: React.Dispatch<React.SetStateAction<Point>>
 };
 
 const MAX_SIZE_MULTIPLIER = 10;
 const MIN_SIZE_MULTIPLIER = 0.001;
 
-export default function SimulationBoard({objectsToRender, selectObject}: Props) {
-	const [offset, setOffset] = useState<Point>(new Point(0, 0));
+export default function SimulationBoard({objectsToRender, selectObject, offset, setOffset}: Props) {
 	const [sizeMultiplier, setSizeMultiplier] = useState(1);
+	console.log('offset', offset);
 	const [preMouseDownCursorPosition, setPreMouseDownCursorPosition] = useState({
 		x: 0,
 		y: 0,

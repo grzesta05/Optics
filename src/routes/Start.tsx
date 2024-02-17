@@ -11,8 +11,11 @@ import {
 	mapSimulationObjectToProperties,
 	SimulationObjectPropertiesType
 } from "@/properties/SimulationObjectProperties/SimulationProperties.ts";
+import ObjectListTab from "@components/SideWindow/SideWindowTabs/ObjectListTab.tsx";
+import Point from "@/classes/Point.ts";
 
 function Start() {
+	const [offset, setOffset] = useState<Point>(new Point(0, 0));
 	const [selectedObject, setSelectedObject] = useState<SimulationObject>();
 	const [objectsToRender, setObjectsToRender] = useState<Array<SimulationObject>>([
 		new Laser(100, 200, 0),
@@ -66,11 +69,22 @@ function Start() {
 		document.body.removeChild(tmpElement);
 	};
 
+	const changeOffsetToObjectPosition = (chosenObject: SimulationObject) => {
+		setOffset(
+			new Point(chosenObject.bounds.center().x, chosenObject.bounds.center().y)
+		);
+	};
+
 	return (
 		<div data-testid="StartScreen" className={styles.simulationContainer}>
       <UpperMenu onImport={loadJSONSimulationBoard} onExport={saveSimulationBoardJSON} onRefresh={() => setObjectsToRender(prev => prev)} />
 			<div className={styles.workSpace} >
-			<SimulationBoard selectObject={setSelectedObject} objectsToRender={objectsToRender}/>
+			<SimulationBoard
+				selectObject={setSelectedObject}
+				objectsToRender={objectsToRender}
+				offset={offset}
+				setOffset={setOffset}
+			/>
 			<SideWindow
 				windows={[
 					{
@@ -96,6 +110,12 @@ function Start() {
 								<></>
 							),
 					},
+					{
+						header: "Objects",
+						component: (
+							<ObjectListTab renderedObjects={objectsToRender} goToObjectPosition={changeOffsetToObjectPosition} />
+						)
+					}
 				]}
 			/>
       </div>
