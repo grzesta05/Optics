@@ -5,6 +5,12 @@ import Laser from "@/model/SimulationObjects/Senders/Laser";
 import { FormEvent, useState } from "react";
 import SimulationObject from "@/model/SimulationObject.ts";
 import UpperMenu from "@components/UpperMenu.tsx";
+import PropertiesTab from "@components/SideWindow/SideWindowTabs/PropertiesTab.tsx";
+import {
+	changeSimulationObjectByProperties,
+	mapSimulationObjectToProperties,
+	SimulationObjectPropertiesType
+} from "@/properties/SimulationObjectProperties/SimulationProperties.ts";
 
 function Start() {
 	const [selectedObject, setSelectedObject] = useState<SimulationObject>();
