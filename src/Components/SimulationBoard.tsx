@@ -286,11 +286,11 @@ export default function SimulationBoard({ objectsToRender, selectObject, setObje
 			return object.bounds.contains(position);
 		});
 
+		selectObject(selectedObject);
+
 		if (!selectedObject) {
 			return;
 		}
-
-		selectObject(selectedObject);
 
 		setInitialDragPosition({
 			x: e.clientX,
