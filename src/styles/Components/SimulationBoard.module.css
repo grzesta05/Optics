@@ -1,4 +1,7 @@
 .canvas {
-  background-image: url("https://png.pngtree.com/png-vector/20190420/ourmid/pngtree-vector-plus-icon-png-image_966656.jpg");
-  width: 83vw;
+  background-image: url("/img/grid.png");
+
+  background-size: 100px;
+  background-blend-mode: soft-light;
+  background-color: rgb(33, 33, 44);
 }

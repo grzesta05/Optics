@@ -1,0 +1,36 @@
+.button {
+	background-color: #212121;
+	color: whitesmoke;
+	border: none;
+	padding: 10px 25px;
+	font-size: 1.2rem;
+
+
+	&.menutab {
+		 text-transform: capitalize;
+	letter-spacing: 0.2rem;
+		border-top: 5px solid #1a1a1a;
+		 transition: all 0.2s;
+	&:hover{
+		background-color: #1a1a1a;
+	 }
+	 }
+
+
+	&.rounded {
+		border-radius: 10px;
+	}
+
+	&.success {
+		background-color: #50c878;
+	}
+
+	&.error {
+		background-color: #f01e2c;
+		color: #eee;
+	}
+
+	&.danger {
+		background-color: #f4c430;
+	}
+}
