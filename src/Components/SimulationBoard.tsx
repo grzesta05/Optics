@@ -1,5 +1,5 @@
 import SimulationObject from "@/model/SimulationObject";
-import React, { Dispatch, MouseEventHandler, SetStateAction, useEffect, useMemo, useRef, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useMemo, useRef, useState } from "react";
 import styles from "@styles/Components/SimulationBoard.module.css";
 import Point from "@/classes/Point.ts";
 import Rectangle from "@/classes/Rectangle.ts";
@@ -11,9 +11,12 @@ import { Particle } from "@/classes/Lines/Particle.ts";
 import { Direction } from "@/classes/Lines/LinearFunction.ts";
 import Laser from "@/model/SimulationObjects/Senders/Laser";
 
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { setOffset, setSizeMultiplier } from "@/lib/slices/canvasSlice";
+
 type Props = {
 	objectsToRender: Array<SimulationObject>;
-	selectObject: Dispatch<SetStateAction<SimulationObject | undefined>>;
+	selectObject: (object: SimulationObject | undefined) => void;
 	setObjectsToRender: Dispatch<SetStateAction<Array<SimulationObject>>>;
 };
 
@@ -21,8 +24,10 @@ const MAX_SIZE_MULTIPLIER = 10;
 const MIN_SIZE_MULTIPLIER = 0.001;
 
 export default function SimulationBoard({ objectsToRender, selectObject, setObjectsToRender }: Props) {
-	const [offset, setOffset] = useState<Point>(new Point(0, 0));
-	const [sizeMultiplier, setSizeMultiplier] = useState(1);
+	const offset = useAppSelector((state) => state.canvas.offset);
+	const sizeMultiplier = useAppSelector((state) => state.canvas.sizeMultiplier);
+	const dispatch = useAppDispatch();
+
 	const [preMouseDownCursorPosition, setPreMouseDownCursorPosition] = useState({
 		x: 0,
 		y: 0,
@@ -43,8 +48,13 @@ export default function SimulationBoard({ objectsToRender, selectObject, setObje
 	const possibleLimits = useMemo(() => getAllSurfaces(objectsToRender.map((obj) => obj.bounds)), [objectsToRender]);
 
 	useEffect(() => {
-		console.log("resetting calculations, objectsToRender changed");
 		for (let object of objectsToRender) {
+			const ctx = canvasRef.current?.getContext("2d");
+
+			if (ctx) {
+				object.setContext(ctx);
+			}
+
 			if (isSender(object)) {
 				for (let particle of object.particles) {
 					particle.resetCalculations();
@@ -61,14 +71,15 @@ export default function SimulationBoard({ objectsToRender, selectObject, setObje
 			y: event.clientY,
 		});
 	};
+
 	const dragOnHanlder: React.MouseEventHandler<HTMLCanvasElement> = (event) => {
 		if (isMouseClicked && !selectedObject) {
-			setOffset(
-				new Point(
-					preMouseDownCursorPosition.x + (initialDragPosition.x - event.clientX) / sizeMultiplier,
-					preMouseDownCursorPosition.y + (event.clientY - initialDragPosition.y) / sizeMultiplier
-				)
+			const point = new Point(
+				preMouseDownCursorPosition.x + (initialDragPosition.x - event.clientX) / sizeMultiplier,
+				preMouseDownCursorPosition.y + (event.clientY - initialDragPosition.y) / sizeMultiplier
 			);
+
+			dispatch(setOffset(point));
 		} else if (isMouseClicked && selectedObject) {
 			if (lastMousePosition.x === 0 && lastMousePosition.y === 0) {
 				lastMousePosition.x = event.clientX;
@@ -104,7 +115,7 @@ export default function SimulationBoard({ objectsToRender, selectObject, setObje
 		const newMousePosition = new Point(x / newMultiplier + offset.x, offset.y - y / newMultiplier);
 		const newOffset = offset.add(mousePosition.subtract(newMousePosition));
 		setOffset(newOffset);
-		setSizeMultiplier(newMultiplier);
+		dispatch(setSizeMultiplier(newMultiplier));
 
 		// refresh the current drag position
 		setPreMouseDownCursorPosition(newOffset);
@@ -273,9 +284,7 @@ export default function SimulationBoard({ objectsToRender, selectObject, setObje
 	const clickOnObject = (e: React.MouseEvent<HTMLCanvasElement>) => {
 		const object = getObjectOnClick(e);
 
-		if (object) {
-			selectObject(object);
-		}
+		selectObject(object);
 	};
 
 	const elementDragStartHandler = (e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -327,7 +336,7 @@ export default function SimulationBoard({ objectsToRender, selectObject, setObje
 	return (
 		<canvas
 			ref={canvasRef}
-			onClick={clickOnObject}
+			// onClick={clickOnObject}
 			onWheel={wheelResizeHandle}
 			onMouseDown={mouseDownHandler}
 			onMouseMove={dragOnHanlder}

@@ -12,6 +12,8 @@ import {
 	changeSimulationObjectByProperties,
 } from "@/properties/SimulationObjectProperties/SimulationProperties";
 
+import { useAppSelector } from "@/lib/hooks";
+
 function Start() {
 	const [selectedObject, setSelectedObject] = useState<SimulationObject>();
 	const [objectsToRender, setObjectsToRender] = useState<Array<SimulationObject>>([
@@ -21,6 +23,8 @@ function Start() {
 		new Laser(200, 400, 259),
 		new Laser(400, 300, 144),
 	]);
+
+	const { offset, sizeMultiplier } = useAppSelector((state) => state.canvas);
 
 	const loadJSONSimulationBoard = async (event: FormEvent) => {
 		const fileInput = event.target as HTMLInputElement;
@@ -66,6 +70,18 @@ function Start() {
 		document.body.removeChild(tmpElement);
 	};
 
+	const handleSelectObject = (object: SimulationObject | undefined) => {
+		console.log("Selected object", object, selectedObject);
+
+		selectedObject?.toggleSelected();
+		object?.toggleSelected();
+
+		selectedObject?.drawBounds(offset, sizeMultiplier);
+		object?.drawBounds(offset, sizeMultiplier);
+
+		setSelectedObject(object);
+	};
+
 	return (
 		<div data-testid="StartScreen" className={styles.simulationContainer}>
 			<UpperMenu
@@ -75,7 +91,7 @@ function Start() {
 			/>
 			<div className={styles.workSpace}>
 				<SimulationBoard
-					selectObject={setSelectedObject}
+					selectObject={handleSelectObject}
 					objectsToRender={objectsToRender}
 					setObjectsToRender={setObjectsToRender}
 				/>

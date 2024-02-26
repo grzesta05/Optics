@@ -33,16 +33,14 @@ export default class Laser extends Sender {
 
 			lasers.push(laser);
 		}
-    
-		super(
-			rect,
-			"/img/laser.png",
-			lasers,
-		);
+
+		super(rect, "/img/laser.png", lasers);
 	}
 
 	public recalculateParticles() {
-		const startPoint = Point.midpoint(this.bounds.topRight, this.bounds.bottomRight).add(new Point(0.1, 0).rotate(toDegrees(this.bounds.rotation)));
+		const startPoint = Point.midpoint(this.bounds.topRight, this.bounds.bottomRight).add(
+			new Point(0.1, 0).rotate(toDegrees(this.bounds.rotation))
+		);
 
 		let newParticles: Particle[] = [];
 		for (const particle of this.particles) {
@@ -61,3 +59,7 @@ export default class Laser extends Sender {
 		this.particles = newParticles;
 	}
 }
+
+export const isLaser = (object: any): object is Laser => {
+	return object instanceof Laser;
+};
