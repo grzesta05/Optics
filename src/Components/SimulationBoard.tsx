@@ -1,5 +1,5 @@
 import SimulationObject from "@/model/SimulationObject";
-import React, { Dispatch, SetStateAction, useEffect, useMemo, useRef, useState } from "react";
+import React, { Dispatch, MouseEventHandler, SetStateAction, useEffect, useMemo, useRef, useState } from "react";
 import styles from "@styles/Components/SimulationBoard.module.css";
 import Point from "@/classes/Point.ts";
 import Rectangle from "@/classes/Rectangle.ts";
@@ -18,7 +18,7 @@ type Props = {
 const MAX_SIZE_MULTIPLIER = 10;
 const MIN_SIZE_MULTIPLIER = 0.001;
 
-export default function SimulationBoard({objectsToRender, selectObject}: Props) {
+export default function SimulationBoard({ objectsToRender, selectObject }: Props) {
 	const [offset, setOffset] = useState<Point>(new Point(0, 0));
 	const [sizeMultiplier, setSizeMultiplier] = useState(1);
 	const [preMouseDownCursorPosition, setPreMouseDownCursorPosition] = useState({
@@ -231,10 +231,12 @@ export default function SimulationBoard({objectsToRender, selectObject}: Props) 
 		}
 	};
 
-	const clickOnObject = (e: any) => {
+	const clickOnObject = (e: React.MouseEvent<HTMLCanvasElement>) => {
+		const target = e.target as HTMLCanvasElement;
+
 		const mousePosition = {
-			x: e.clientX - e.target.getBoundingClientRect().left,
-			y: e.clientY - e.target.getBoundingClientRect().top,
+			x: e.clientX - target.getBoundingClientRect().left,
+			y: e.clientY - target.getBoundingClientRect().top,
 		};
 		const position = new Point(...canvasToPosition(mousePosition.x, mousePosition.y, offset, sizeMultiplier));
 		selectObject(
@@ -262,3 +264,4 @@ export default function SimulationBoard({objectsToRender, selectObject}: Props) 
 		></canvas>
 	);
 }
+
