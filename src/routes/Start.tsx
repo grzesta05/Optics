@@ -74,7 +74,11 @@ function Start() {
 				onRefresh={() => setObjectsToRender((prev) => prev)}
 			/>
 			<div className={styles.workSpace}>
-				<SimulationBoard selectObject={setSelectedObject} objectsToRender={objectsToRender} />
+				<SimulationBoard
+					selectObject={setSelectedObject}
+					objectsToRender={objectsToRender}
+					setObjectsToRender={setObjectsToRender}
+				/>
 				<SideWindow
 					windows={[
 						{
