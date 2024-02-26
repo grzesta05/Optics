@@ -13,12 +13,13 @@ import {
 } from "@/properties/SimulationObjectProperties/SimulationProperties";
 
 import { useAppSelector } from "@/lib/hooks";
+import ToolbarTab from "@/components/SideWindow/SideWindowTabs/ToolbarTab";
 
 function Start() {
 	const [selectedObject, setSelectedObject] = useState<SimulationObject>();
 	const [objectsToRender, setObjectsToRender] = useState<Array<SimulationObject>>([
 		new Laser(100, 200, 0),
-		new Laser(500, 250, 130),
+		new Laser(500, 250, 90),
 		new Laser(100, 10, 50),
 		new Laser(200, 400, 259),
 		new Laser(400, 300, 144),
@@ -108,6 +109,10 @@ function Start() {
 				/>
 				<SideWindow
 					windows={[
+						{
+							header: "Toolbar",
+							component: <ToolbarTab setObjectsToRender={setObjectsToRender} />,
+						},
 						{
 							header: "Properties",
 							component:

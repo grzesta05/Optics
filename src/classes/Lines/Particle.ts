@@ -4,7 +4,7 @@ import { Surface } from "@/classes/Lines/Surface.ts";
 import { calculateLinearFromPointAndAngle } from "@/utils/geometry.ts";
 import { toDegrees } from "@/utils/algebra.ts";
 
-const REFLECTIONS_LIMIT = 100;
+const REFLECTIONS_LIMIT = 10;
 
 export class Particle extends LinearFunction {
 	public color: string = "#FF0000";
