@@ -290,6 +290,8 @@ export default function SimulationBoard({ objectsToRender, selectObject, setObje
 			return;
 		}
 
+		selectObject(selectedObject);
+
 		setInitialDragPosition({
 			x: e.clientX,
 			y: e.clientY,
