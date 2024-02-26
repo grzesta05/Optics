@@ -180,21 +180,7 @@ export default function SimulationBoard({ objectsToRender, selectObject, setObje
 				continue;
 			}
 
-			// draw object bounds - mainly for debugging purposes
-			const bounds = object.bounds.points();
-			context.strokeStyle = "yellow";
-			context.lineWidth = sizeMultiplier;
-			for (let i = 0; i < 4; i++) {
-				const x = bounds[i].x;
-				const y = bounds[i].y;
-				const x2 = bounds[(i + 1) % 4].x;
-				const y2 = bounds[(i + 1) % 4].y;
-
-				context.beginPath();
-				context.moveTo(...positionToCanvas(x, y, offset, sizeMultiplier));
-				context.lineTo(...positionToCanvas(x2, y2, offset, sizeMultiplier));
-				context.stroke();
-			}
+			object.drawBounds(offset, sizeMultiplier);
 
 			object.draw(drawCall);
 		}
