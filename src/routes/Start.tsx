@@ -25,6 +25,7 @@ function Start() {
 	]);
 
 	const { offset, sizeMultiplier } = useAppSelector((state) => state.canvas);
+	const { isShown, position } = useAppSelector((state) => state.contextMenu);
 
 	const loadJSONSimulationBoard = async (event: FormEvent) => {
 		const fileInput = event.target as HTMLInputElement;
@@ -126,6 +127,32 @@ function Start() {
 					]}
 				/>
 			</div>
+			{isShown && (
+				<div
+					style={{
+						position: "absolute",
+						backgroundColor: "black",
+						top: position.y,
+						left: position.x,
+						borderRadius: "8px",
+						color: "white",
+						padding: "16px",
+						transform: "translate(-50%, -110%)",
+					}}
+				>
+					<p>Context Menu</p>
+					<div
+						style={{
+							display: "flex",
+							flexDirection: "column",
+						}}
+					>
+						<button>Add new object</button>
+						<button>Option 2</button>
+						<button>Option 3</button>
+					</div>
+				</div>
+			)}
 		</div>
 	);
 }
