@@ -5,22 +5,28 @@ import Point from "@/classes/Point.ts";
 import Rectangle from "@/classes/Rectangle.ts";
 import { isSender } from "@/model/SimulationObjects/Sender.ts";
 import { canvasToPosition, positionToCanvas } from "@/utils/canvas.ts";
-import { toDegrees } from "@/utils/algebra.ts";
 import { getAllSurfaces } from "@/utils/geometry.ts";
 import { Particle } from "@/classes/Lines/Particle.ts";
-import { Direction } from "@/classes/Lines/LinearFunction.ts";
+import Laser from "@/model/SimulationObjects/Senders/Laser";
+
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { setOffset, setSizeMultiplier } from "@/lib/slices/canvasSlice";
+import { setIsShown, setPosition } from "@/lib/slices/contextMenuSlice";
 
 type Props = {
 	objectsToRender: Array<SimulationObject>;
-	selectObject: Dispatch<SetStateAction<SimulationObject | undefined>>;
+	selectObject: (object: SimulationObject | undefined) => void;
+	setObjectsToRender: Dispatch<SetStateAction<Array<SimulationObject>>>;
 };
 
 const MAX_SIZE_MULTIPLIER = 10;
 const MIN_SIZE_MULTIPLIER = 0.001;
 
-export default function SimulationBoard({objectsToRender, selectObject}: Props) {
-	const [offset, setOffset] = useState<Point>(new Point(0, 0));
-	const [sizeMultiplier, setSizeMultiplier] = useState(1);
+export default function SimulationBoard({ objectsToRender, selectObject, setObjectsToRender }: Props) {
+	const offset = useAppSelector((state) => state.canvas.offset);
+	const sizeMultiplier = useAppSelector((state) => state.canvas.sizeMultiplier);
+	const dispatch = useAppDispatch();
+
 	const [preMouseDownCursorPosition, setPreMouseDownCursorPosition] = useState({
 		x: 0,
 		y: 0,
@@ -30,17 +36,24 @@ export default function SimulationBoard({objectsToRender, selectObject}: Props) 
 		x: 0,
 		y: 0,
 	});
+	const [selectedObject, setSelectedObject] = useState<SimulationObject>();
+	const [lastMousePosition, setLastMousePosition] = useState(new Point(0, 0));
 
-	const canvasSize = {
-		width: window.innerWidth / 1.2 - 300,
-		height: window.innerHeight / 2,
-	};
+	const [canvasSize, setCanvasSize] = useState({
+		width: window.innerWidth * 0.8 - 300,
+		height: window.innerHeight * 0.5,
+	});
 
 	const possibleLimits = useMemo(() => getAllSurfaces(objectsToRender.map((obj) => obj.bounds)), [objectsToRender]);
 
 	useEffect(() => {
-		console.log("resetting calculations, objectsToRender changed");
 		for (let object of objectsToRender) {
+			const ctx = canvasRef.current?.getContext("2d");
+
+			if (ctx) {
+				object.setContext(ctx);
+			}
+
 			if (isSender(object)) {
 				for (let particle of object.particles) {
 					particle.resetCalculations();
@@ -57,14 +70,34 @@ export default function SimulationBoard({objectsToRender, selectObject}: Props) 
 			y: event.clientY,
 		});
 	};
+
 	const dragOnHanlder: React.MouseEventHandler<HTMLCanvasElement> = (event) => {
-		if (isMouseClicked) {
-			setOffset(
-				new Point(
-					preMouseDownCursorPosition.x + (initialDragPosition.x - event.clientX) / sizeMultiplier,
-					preMouseDownCursorPosition.y + (event.clientY - initialDragPosition.y) / sizeMultiplier
-				)
+		if (isMouseClicked && !selectedObject) {
+			const point = new Point(
+				preMouseDownCursorPosition.x + (initialDragPosition.x - event.clientX) / sizeMultiplier,
+				preMouseDownCursorPosition.y + (event.clientY - initialDragPosition.y) / sizeMultiplier
 			);
+
+			dispatch(setOffset(point));
+		} else if (isMouseClicked && selectedObject) {
+			if (lastMousePosition.x === 0 && lastMousePosition.y === 0) {
+				lastMousePosition.x = event.clientX;
+				lastMousePosition.y = event.clientY;
+			}
+
+			const diffX = (event.clientX - lastMousePosition.x) / sizeMultiplier;
+			const diffY = (event.clientY - lastMousePosition.y) / sizeMultiplier;
+
+			lastMousePosition.x = event.clientX;
+			lastMousePosition.y = event.clientY;
+
+			selectedObject.bounds.moveBy(new Point(diffX, diffY));
+
+			if (selectedObject instanceof Laser) {
+				(selectedObject as Laser).recalculateParticles();
+			}
+
+			setObjectsToRender([...objectsToRender]);
 		}
 	};
 	const wheelResizeHandle: React.WheelEventHandler<HTMLCanvasElement> = (event) => {
@@ -81,7 +114,7 @@ export default function SimulationBoard({objectsToRender, selectObject}: Props) 
 		const newMousePosition = new Point(x / newMultiplier + offset.x, offset.y - y / newMultiplier);
 		const newOffset = offset.add(mousePosition.subtract(newMousePosition));
 		setOffset(newOffset);
-		setSizeMultiplier(newMultiplier);
+		dispatch(setSizeMultiplier(newMultiplier));
 
 		// refresh the current drag position
 		setPreMouseDownCursorPosition(newOffset);
@@ -92,6 +125,8 @@ export default function SimulationBoard({objectsToRender, selectObject}: Props) 
 	};
 	const dragEndHandler: React.MouseEventHandler<HTMLCanvasElement> = () => {
 		setIsMouseClicked(false);
+		setLastMousePosition(new Point(0, 0));
+		setSelectedObject(undefined);
 	};
 
 	const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -105,8 +140,7 @@ export default function SimulationBoard({objectsToRender, selectObject}: Props) 
 	const animate = () => {
 		const ctx = canvasRef.current as HTMLCanvasElement;
 
-		ctx.width = canvasSize.width;
-		ctx.height = canvasSize.height;
+		console.log(ctx.width);
 
 		const context = ctx.getContext("2d");
 		if (!context) return;
@@ -120,9 +154,6 @@ export default function SimulationBoard({objectsToRender, selectObject}: Props) 
 			canvasSize.height / sizeMultiplier
 		);
 
-		let totalObjects = objectsToRender.length;
-		let skippedObjects = 0;
-
 		for (const object of objectsToRender) {
 			if (isSender(object)) {
 				for (const particle of object.particles as Particle[]) {
@@ -131,6 +162,10 @@ export default function SimulationBoard({objectsToRender, selectObject}: Props) 
 					}
 
 					for (const child of particle.childReflections) {
+						if (child.childReflections.length > 0) {
+							console.log("child has children");
+						}
+
 						drawLaser(child, renderBounds, context);
 					}
 
@@ -140,30 +175,13 @@ export default function SimulationBoard({objectsToRender, selectObject}: Props) 
 
 			const shouldRender = renderBounds.intersectsOrContains(object.bounds);
 			if (!shouldRender) {
-				skippedObjects++;
 				continue;
 			}
 
-			// draw object bounds - mainly for debugging purposes
-			const bounds = object.bounds.points();
-			context.strokeStyle = "yellow";
-			context.lineWidth = sizeMultiplier;
-			for (let i = 0; i < 4; i++) {
-				const x = bounds[i].x;
-				const y = bounds[i].y;
-				const x2 = bounds[(i + 1) % 4].x;
-				const y2 = bounds[(i + 1) % 4].y;
+			object.drawBounds(offset, sizeMultiplier);
 
-				context.beginPath();
-				context.moveTo(...positionToCanvas(x, y, offset, sizeMultiplier));
-				context.lineTo(...positionToCanvas(x2, y2, offset, sizeMultiplier));
-				context.stroke();
-			}
-
-			object.draw(drawCall);
+			object.draw(offset, sizeMultiplier);
 		}
-
-		console.log(`Skipped ${skippedObjects} out of ${totalObjects} objects`);
 	};
 
 	const drawLaser = (particle: Particle, renderBounds: Rectangle, context: CanvasRenderingContext2D) => {
@@ -189,69 +207,107 @@ export default function SimulationBoard({objectsToRender, selectObject}: Props) 
 		context.font = "50px Arial";
 		context.fillStyle = particle.color;
 
-		if (particle.direction == Direction.Left) {
-			context.fillText("←", ...positionToCanvas(laserEnd.x, laserEnd.y, offset, sizeMultiplier));
+		// if (particle.direction == Direction.Left) {
+		// 	context.fillText("←", ...positionToCanvas(laserEnd.x, laserEnd.y, offset, sizeMultiplier));
+		// 	return;
+		// }
+
+		// context.fillText("→", ...positionToCanvas(laserStart.x, laserStart.y, offset, sizeMultiplier));
+	};
+
+	const elementDragStartHandler = (e: React.MouseEvent<HTMLCanvasElement>) => {
+		const target = e.target as HTMLCanvasElement;
+
+		const mousePosition = {
+			x: e.clientX - target.getBoundingClientRect().left,
+			y: e.clientY - target.getBoundingClientRect().top,
+		};
+		const position = new Point(...canvasToPosition(mousePosition.x, mousePosition.y, offset, sizeMultiplier));
+
+		const selectedObject = objectsToRender.find((object) => {
+			return object.bounds.contains(position);
+		});
+
+		selectObject(selectedObject);
+
+		if (!selectedObject) {
 			return;
 		}
 
-		context.fillText("→", ...positionToCanvas(laserStart.x, laserStart.y, offset, sizeMultiplier));
+		setInitialDragPosition({
+			x: e.clientX,
+			y: e.clientY,
+		});
+		setIsMouseClicked(true);
+		setSelectedObject(selectedObject);
 	};
 
-	const drawCall = (image: CanvasImageSource, center: Point, rotation: number, sizeX: number, sizeY: number) => {
-		const ctx = canvasRef.current as HTMLCanvasElement;
-		const context = ctx.getContext("2d");
-		const topLeft = new Point(-sizeX / 2, -sizeY / 2).rotate(toDegrees(rotation)).add(center);
-		const x = topLeft.x;
-		const y = topLeft.y;
+	const mouseDownHandler = (e: React.MouseEvent<HTMLCanvasElement>) => {
+		const button = e.button === 0 ? "left" : e.button === 1 ? "middle" : "right";
+		dispatch(setIsShown(false));
 
-		if (toDegrees(rotation) / 360 === 0) {
-			context?.drawImage(
-				image,
-				...positionToCanvas(x, y, offset, sizeMultiplier),
-				sizeX * sizeMultiplier,
-				sizeY * sizeMultiplier
-			);
-		} else {
-			context?.save();
-			context?.translate(...positionToCanvas(center.x, center.y, offset, sizeMultiplier));
-			// draw circle at 0,0
-			context?.beginPath();
-			context?.arc(0, 0, 5, 0, 2 * Math.PI);
-			context?.fill();
+		switch (button) {
+			case "middle":
+				dragStartHandler(e);
+				break;
 
-			context?.rotate(rotation);
-			context?.drawImage(
-				image,
-				(-sizeX * sizeMultiplier) / 2,
-				(-sizeY * sizeMultiplier) / 2,
-				sizeX * sizeMultiplier,
-				sizeY * sizeMultiplier
-			);
-			context?.restore();
+			case "left":
+				elementDragStartHandler(e);
+				break;
+
+			default:
+				break;
 		}
 	};
 
-	const clickOnObject = (e: any) => {
-		const mousePosition = {
-			x: e.clientX - e.target.getBoundingClientRect().left,
-			y: e.clientY - e.target.getBoundingClientRect().top,
-		};
-		const position = new Point(...canvasToPosition(mousePosition.x, mousePosition.y, offset, sizeMultiplier));
-		selectObject(
-			objectsToRender.find((object) => {
-				return object.bounds.contains(position);
-			})
-		);
+	const handleContextMenu = (e: React.MouseEvent<HTMLCanvasElement>) => {
+		e.preventDefault();
+
+		const { clientX, clientY } = e;
+
+		dispatch(setPosition({ x: clientX, y: clientY }));
+		dispatch(setIsShown(true));
 	};
+
+	const handleResize = () => {
+		setCanvasSize({
+			width: window.innerWidth * 0.8 - 300,
+			height: window.innerHeight * 0.5,
+		});
+
+		const canvas = canvasRef.current;
+		if (!canvas) return;
+
+		canvas.width = window.innerWidth * 0.8 - 300;
+		canvas.height = window.innerHeight * 0.5;
+
+		animate();
+	};
+
+	useEffect(() => {
+		const canvas = canvasRef.current;
+		if (canvas) {
+			canvas.width = canvasSize.width;
+			canvas.height = canvasSize.height;
+		}
+
+		window.addEventListener("resize", handleResize);
+
+		return () => {
+			window.removeEventListener("resize", handleResize);
+		};
+	}, []);
+
 	return (
 		<canvas
 			ref={canvasRef}
-			onClick={clickOnObject}
+			// onClick={clickOnObject}
 			onWheel={wheelResizeHandle}
-			onMouseDown={dragStartHandler}
+			onMouseDown={mouseDownHandler}
 			onMouseMove={dragOnHanlder}
 			onMouseUp={dragEndHandler}
 			onMouseOut={dragEndHandler}
+			onContextMenu={handleContextMenu}
 			data-testid="SimulationBoard"
 			style={{
 				backgroundPositionX: -offset.x * sizeMultiplier,
@@ -262,3 +318,4 @@ export default function SimulationBoard({objectsToRender, selectObject}: Props) 
 		></canvas>
 	);
 }
+
