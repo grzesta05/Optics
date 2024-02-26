@@ -5,7 +5,6 @@ import Point from "@/classes/Point.ts";
 import Rectangle from "@/classes/Rectangle.ts";
 import { isSender } from "@/model/SimulationObjects/Sender.ts";
 import { canvasToPosition, positionToCanvas } from "@/utils/canvas.ts";
-import { toDegrees } from "@/utils/algebra.ts";
 import { getAllSurfaces } from "@/utils/geometry.ts";
 import { Particle } from "@/classes/Lines/Particle.ts";
 import { Direction } from "@/classes/Lines/LinearFunction.ts";
@@ -182,7 +181,7 @@ export default function SimulationBoard({ objectsToRender, selectObject, setObje
 
 			object.drawBounds(offset, sizeMultiplier);
 
-			object.draw(drawCall);
+			object.draw(offset, sizeMultiplier);
 		}
 
 		console.log(`Skipped ${skippedObjects} out of ${totalObjects} objects`);
@@ -217,40 +216,6 @@ export default function SimulationBoard({ objectsToRender, selectObject, setObje
 		}
 
 		context.fillText("→", ...positionToCanvas(laserStart.x, laserStart.y, offset, sizeMultiplier));
-	};
-
-	const drawCall = (image: CanvasImageSource, center: Point, rotation: number, sizeX: number, sizeY: number) => {
-		const ctx = canvasRef.current as HTMLCanvasElement;
-		const context = ctx.getContext("2d");
-		const topLeft = new Point(-sizeX / 2, -sizeY / 2).rotate(toDegrees(rotation)).add(center);
-		const x = topLeft.x;
-		const y = topLeft.y;
-
-		if (toDegrees(rotation) / 360 === 0) {
-			context?.drawImage(
-				image,
-				...positionToCanvas(x, y, offset, sizeMultiplier),
-				sizeX * sizeMultiplier,
-				sizeY * sizeMultiplier
-			);
-		} else {
-			context?.save();
-			context?.translate(...positionToCanvas(center.x, center.y, offset, sizeMultiplier));
-			// draw circle at 0,0
-			context?.beginPath();
-			context?.arc(0, 0, 5, 0, 2 * Math.PI);
-			context?.fill();
-
-			context?.rotate(rotation);
-			context?.drawImage(
-				image,
-				(-sizeX * sizeMultiplier) / 2,
-				(-sizeY * sizeMultiplier) / 2,
-				sizeX * sizeMultiplier,
-				sizeY * sizeMultiplier
-			);
-			context?.restore();
-		}
 	};
 
 	const getObjectOnClick = (e: React.MouseEvent<HTMLCanvasElement>) => {

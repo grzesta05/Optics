@@ -3,6 +3,7 @@ import Point from "@/classes/Point.ts";
 import Sender from "@/model/SimulationObjects/Sender.ts";
 import { normalizeDegrees, toDegrees } from "@/utils/algebra.ts";
 import { Particle } from "@/classes/Lines/Particle.ts";
+import { positionToCanvas } from "@/utils/canvas";
 
 export default class Laser extends Sender {
 	public static imagePath = "/img/laser.png";
@@ -57,6 +58,49 @@ export default class Laser extends Sender {
 			newParticles.push(newParticle);
 		}
 		this.particles = newParticles;
+	}
+
+	draw(offset: Point, sizeMultiplier: number): void {
+		const context = this.ctx;
+		if (!context) {
+			return;
+		}
+
+		const sizeX = this.bounds.sizeX();
+		const sizeY = this.bounds.sizeY();
+		const rotation = this.bounds.rotation;
+		const center = this.bounds.center();
+		const image = this._image;
+
+		const topLeft = new Point(-sizeX / 2, -sizeY / 2).rotate(toDegrees(rotation)).add(center);
+		const x = topLeft.x;
+		const y = topLeft.y;
+
+		if (toDegrees(rotation) / 360 === 0) {
+			context?.drawImage(
+				image,
+				...positionToCanvas(x, y, offset, sizeMultiplier),
+				sizeX * sizeMultiplier,
+				sizeY * sizeMultiplier
+			);
+		} else {
+			context?.save();
+			context?.translate(...positionToCanvas(center.x, center.y, offset, sizeMultiplier));
+			// draw circle at 0,0
+			context?.beginPath();
+			context?.arc(0, 0, 5, 0, 2 * Math.PI);
+			context?.fill();
+
+			context?.rotate(rotation);
+			context?.drawImage(
+				image,
+				(-sizeX * sizeMultiplier) / 2,
+				(-sizeY * sizeMultiplier) / 2,
+				sizeX * sizeMultiplier,
+				sizeY * sizeMultiplier
+			);
+			context?.restore();
+		}
 	}
 }
 
