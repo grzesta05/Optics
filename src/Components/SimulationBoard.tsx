@@ -162,6 +162,10 @@ export default function SimulationBoard({ objectsToRender, selectObject, setObje
 					}
 
 					for (const child of particle.childReflections) {
+						if (child.childReflections.length > 0) {
+							console.log("child has children");
+						}
+
 						drawLaser(child, renderBounds, context);
 					}
 

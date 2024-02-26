@@ -83,6 +83,16 @@ function Start() {
 		setSelectedObject(object);
 	};
 
+	const handleNewObject = () => {
+		const newObject = new Laser(100, 100, 0);
+
+		handleSelectObject(newObject);
+
+		setObjectsToRender((prev) => {
+			return [...prev, newObject];
+		});
+	};
+
 	return (
 		<div data-testid="StartScreen" className={styles.simulationContainer}>
 			<UpperMenu
@@ -147,7 +157,7 @@ function Start() {
 							flexDirection: "column",
 						}}
 					>
-						<button>Add new object</button>
+						<button onClick={handleNewObject}>Add new object</button>
 						<button>Option 2</button>
 						<button>Option 3</button>
 					</div>

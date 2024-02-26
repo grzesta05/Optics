@@ -4,7 +4,7 @@ import { Surface } from "@/classes/Lines/Surface.ts";
 import { calculateLinearFromPointAndAngle } from "@/utils/geometry.ts";
 import { toDegrees } from "@/utils/algebra.ts";
 
-const REFLECTIONS_LIMIT = 3;
+const REFLECTIONS_LIMIT = 100;
 
 export class Particle extends LinearFunction {
 	public color: string = "#FF0000";
@@ -63,11 +63,12 @@ export class Particle extends LinearFunction {
 
 		if (this._currentReflectionSurface && this._currentReflectionPoint) {
 			let angleBetween = this.angleBetween(this._currentReflectionSurface);
-			console.log(toDegrees(this.angle), toDegrees(angleBetween));
 
-			// get the point a little bit earlier than the reflection point
+			// // get the point a little bit earlier than the reflection point
 			let x = this.direction == Direction.Left ? 0.01 : -0.01;
-			const actualReflectionPoint = this._currentReflectionPoint.add(new Point(x, 0).rotate(toDegrees(this.angle)));
+			const actualReflectionPoint = this._currentReflectionPoint.add(
+				new Point(x, 0).rotate(toDegrees(this.angle))
+			);
 			const childReflection = this.rotateWithAPoint(angleBetween * 2, actualReflectionPoint);
 
 			childReflection.reflexionIndex = this.reflexionIndex + 1;
@@ -86,7 +87,6 @@ export class Particle extends LinearFunction {
 
 		this._hasReflectionsCalculated = true;
 	}
-
 
 	public calculateLimits(others: Surface[]): void {
 		for (const other of others) {
@@ -110,7 +110,14 @@ export class Particle extends LinearFunction {
 		}
 	}
 
-	constructor(a: number, b: number, direction: Direction, reflexionIndex: number = 0, color: string = "#FF0000", intensity: number = 1) {
+	constructor(
+		a: number,
+		b: number,
+		direction: Direction,
+		reflexionIndex: number = 0,
+		color: string = "#FF0000",
+		intensity: number = 1
+	) {
 		super(a, b, direction);
 		this.reflexionIndex = reflexionIndex;
 		this.color = color;
@@ -118,7 +125,7 @@ export class Particle extends LinearFunction {
 	}
 
 	static fromPointAndAngle(point: Point, radians: number): Particle {
-		const {a, b, direction} = calculateLinearFromPointAndAngle(point, radians);
+		const { a, b, direction } = calculateLinearFromPointAndAngle(point, radians);
 		return new Particle(a, b, direction);
 	}
 
@@ -140,7 +147,7 @@ export class Particle extends LinearFunction {
 	public rotateWithAPoint(radians: number, point: Point): Particle {
 		const currentAngle = Math.atan(this.a);
 		let newAngle = currentAngle + radians;
-		const {x, y} = point;
+		const { x, y } = point;
 		const a = Math.tan(newAngle);
 		const b = y - a * x;
 		if (this.direction === Direction.Left) {
@@ -152,7 +159,7 @@ export class Particle extends LinearFunction {
 	}
 
 	public cloneWithNewPointAndAngle(point: Point, radians: number): Particle {
-		const {a, b, direction} = calculateLinearFromPointAndAngle(point, radians);
+		const { a, b, direction } = calculateLinearFromPointAndAngle(point, radians);
 		return new Particle(a, b, direction, this.reflexionIndex, this.color, this.intensity);
 	}
 }
