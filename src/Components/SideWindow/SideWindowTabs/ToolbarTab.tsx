@@ -3,6 +3,7 @@ import Laser from "@/model/SimulationObjects/Senders/Laser";
 import styles from "@/styles/Components/SideWindow/SideWindowTabs/ToolbarTab.module.css";
 import Mirror from "@/model/SimulationObjects/General/Mirror.ts";
 import Lens from "@/model/SimulationObjects/General/Lens";
+import Prism from "@/model/SimulationObjects/General/Prism";
 
 type Props = {
 	setObjectsToRender: React.Dispatch<React.SetStateAction<SimulationObject[]>>;
@@ -12,7 +13,7 @@ export default function ToolbarTab({ setObjectsToRender }: Props) {
 	const categories = [
 		{ categoryName: "Light source", objects: [Laser] },
 		{ categoryName: "Mirrors", objects: [Mirror] },
-		{ categoryName: "Lenses", objects: [Lens] },
+		{ categoryName: "Lenses", objects: [Lens, Prism] },
 	];
 
 	function addObject<Temp extends SimulationObject>(object: new (...args: any) => Temp): void {
