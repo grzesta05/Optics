@@ -38,17 +38,20 @@ function Start() {
 		const uploadedFile = fileInput.files![0];
 
 		try {
-			const uploadedObjects = JSON.parse(await uploadedFile.text()) as Array<SimulationObject>;
+			let uploadedObjects = JSON.parse(await uploadedFile.text()) as Array<SimulationObject>;
 
-			setObjectsToRender(
-				uploadedObjects.map((boardObject) => {
-					const boardObjectCpy = structuredClone(boardObject);
+			uploadedObjects = uploadedObjects.map(boardObject => {
+				const boardObjectCpy = structuredClone(boardObject);
 
-					boardObjectCpy.loadImage(boardObject.imagePath);
+				boardObjectCpy.serializedFunctions.forEach(serializedFunc => {
+					console.log(serializedFunc.func);
+					(boardObjectCpy as any)[serializedFunc.name] = eval(serializedFunc.func);
+				});
 
-					return boardObjectCpy;
-				})
-			);
+				return boardObjectCpy;
+			});
+
+			setObjectsToRender(uploadedObjects);
 		} catch (e) {
 			// Show notification later
 			console.error("error", e);
@@ -71,6 +74,8 @@ function Start() {
 
 		document.body.removeChild(tmpElement);
 	};
+
+	console.log(objectsToRender[0])
 
 	const handleSelectObject = (object: SimulationObject | undefined) => {
 		console.log("Selected object", object, selectedObject);

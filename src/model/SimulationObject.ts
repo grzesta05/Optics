@@ -3,6 +3,8 @@ import Point from "@/classes/Point.ts";
 import { positionToCanvas } from "@/utils/canvas.ts";
 
 export default abstract class SimulationObject {
+	serializedFunctions: { name: string, func: string }[] = [];
+
 	imagePath: string;
 	_image: HTMLImageElement;
 
@@ -17,6 +19,25 @@ export default abstract class SimulationObject {
 
 		this._image = new Image();
 		this._image.src = imagePath;
+		this.serializeFunctions();
+	}
+
+	private serializeFunctions() {
+		const props = [];
+		let obj = this;
+		do {
+			if (!Object.getPrototypeOf(obj)) break;
+			props.push(...Object.getOwnPropertyNames(obj));
+		} while (obj = Object.getPrototypeOf(obj));
+
+		const objCpy = this as any;
+
+		this.serializedFunctions = props.sort().filter((e, i, arr) => {
+			if (e!=arr[i+1] && typeof objCpy[e] === "function" && e !== "constructor") return true;
+		}).map((funcName: string) => ({
+			name: funcName,
+			func: objCpy[funcName].toString() + "}"
+		}));
 	}
 
 	public loadImage(imagePath: string) {
