@@ -59,4 +59,3 @@ export default abstract class SimulationObject {
 		this.selected = !this.selected;
 	}
 }
-

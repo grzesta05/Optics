@@ -115,7 +115,7 @@ class Rectangle {
 		const b3 = sign(point, this.bottomRight, this.bottomLeft) < 0;
 		const b4 = sign(point, this.bottomLeft, this.topLeft) < 0;
 
-		return (b1 === b2) && (b2 === b3) && (b3 === b4);
+		return b1 === b2 && b2 === b3 && b3 === b4;
 	}
 
 	static fromTopLeftAndSize(topLeft: Point, sizeX: number, sizeY: number, degrees: number = 0): Rectangle {
