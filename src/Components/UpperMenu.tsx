@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import styles from "@styles/Components/UpperMenu.module.css";
-import Button from "@/components/UI/Button";
+import Button from "@/Components/UI/Button";
 
 export type BottomMenuEventHandler = {
 	buttonTitle: string;
@@ -13,7 +13,7 @@ export type Props = {
 	onRefresh: () => void;
 };
 
-const UpperMenu = ({ onImport, onExport, onRefresh }: Props) => {
+const UpperMenu = ({onImport, onExport, onRefresh}: Props) => {
 	const simulationBoardInput: React.MutableRefObject<HTMLInputElement | null> = useRef(null);
 
 	const bottomMenuEventHandlers: BottomMenuEventHandler[] = [
@@ -33,7 +33,7 @@ const UpperMenu = ({ onImport, onExport, onRefresh }: Props) => {
 		},
 	];
 
-	const menuElements = bottomMenuEventHandlers.map(({ buttonTitle, handler }, index) => (
+	const menuElements = bottomMenuEventHandlers.map(({buttonTitle, handler}, index) => (
 		<Button styleType="menutab" onClick={handler} key={index}>
 			{buttonTitle}
 		</Button>

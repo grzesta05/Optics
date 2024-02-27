@@ -62,27 +62,58 @@ export class Particle extends LinearFunction {
 		}
 
 		if (this._currentReflectionSurface && this._currentReflectionPoint) {
+			const reflectionIntensity = this.intensity * this._currentReflectionSurface.reflectivity;
 			let angleBetween = this.angleBetween(this._currentReflectionSurface);
 
 			// // get the point a little bit earlier than the reflection point
 			let x = this.direction == Direction.Left ? 0.01 : -0.01;
-			const actualReflectionPoint = this._currentReflectionPoint.add(
+			const actualReflectionPoint = this._currentReflectionPoint.clone().add(
 				new Point(x, 0).rotate(toDegrees(this.angle))
 			);
-			const childReflection = this.rotateWithAPoint(angleBetween * 2, actualReflectionPoint);
+			const passThroughPoint = this._currentReflectionPoint.clone().add(
+				new Point(-x, 0).rotate(toDegrees(this.angle))
+			);
+			if (reflectionIntensity > 0.0001) {
+				const childReflection = this.rotateWithAPoint(angleBetween * 2, actualReflectionPoint);
+				childReflection.reflexionIndex = this.reflexionIndex + 1;
+				if (childReflection.direction === Direction.Right) {
+					childReflection.lowerLimit = actualReflectionPoint.x;
+				} else {
+					childReflection.upperLimit = actualReflectionPoint.x;
+				}
+				childReflection.intensity = reflectionIntensity;
 
-			childReflection.reflexionIndex = this.reflexionIndex + 1;
-			if (childReflection.direction === Direction.Right) {
-				childReflection.lowerLimit = actualReflectionPoint.x;
-			} else {
-				childReflection.upperLimit = actualReflectionPoint.x;
+				if (parent) {
+					parent.childReflections.push(childReflection);
+				} else {
+					this.childReflections.push(childReflection);
+				}
+				childReflection.calculateReflections(others, parent || this);
 			}
-			if (parent) {
-				parent.childReflections.push(childReflection);
-			} else {
-				this.childReflections.push(childReflection);
+
+			const passThroughIntensity = this.intensity * this._currentReflectionSurface.pernatrability;
+			if (passThroughIntensity > 0.0001) {
+
+				const refractiveIndex = this.direction === Direction.Left ? this._currentReflectionSurface.ltrRefractiveIndex : this._currentReflectionSurface.rtlRefractiveIndex;
+				console.log(refractiveIndex);
+
+				// TODO: calculate what exactly is needed here, we dont use the refractive index rn
+				const passThroughParticle = this.cloneWithNewPointAndAngle(passThroughPoint, this.angle);
+				passThroughParticle.intensity = passThroughIntensity;
+				passThroughParticle.reflexionIndex = this.reflexionIndex;
+				passThroughParticle.direction = this.direction;
+				if (passThroughParticle.direction === Direction.Right) {
+					passThroughParticle.lowerLimit = passThroughPoint.x;
+				} else {
+					passThroughParticle.upperLimit = passThroughPoint.x;
+				}
+				if (parent) {
+					parent.childReflections.push(passThroughParticle);
+				} else {
+					this.childReflections.push(passThroughParticle);
+				}
+				passThroughParticle.calculateReflections(others, parent || this);
 			}
-			childReflection.calculateReflections(others, parent || this);
 		}
 
 		this._hasReflectionsCalculated = true;
@@ -125,7 +156,7 @@ export class Particle extends LinearFunction {
 	}
 
 	static fromPointAndAngle(point: Point, radians: number): Particle {
-		const { a, b, direction } = calculateLinearFromPointAndAngle(point, radians);
+		const {a, b, direction} = calculateLinearFromPointAndAngle(point, radians);
 		return new Particle(a, b, direction);
 	}
 
@@ -147,7 +178,7 @@ export class Particle extends LinearFunction {
 	public rotateWithAPoint(radians: number, point: Point): Particle {
 		const currentAngle = Math.atan(this.a);
 		let newAngle = currentAngle + radians;
-		const { x, y } = point;
+		const {x, y} = point;
 		const a = Math.tan(newAngle);
 		const b = y - a * x;
 		if (this.direction === Direction.Left) {
@@ -159,7 +190,7 @@ export class Particle extends LinearFunction {
 	}
 
 	public cloneWithNewPointAndAngle(point: Point, radians: number): Particle {
-		const { a, b, direction } = calculateLinearFromPointAndAngle(point, radians);
+		const {a, b, direction} = calculateLinearFromPointAndAngle(point, radians);
 		return new Particle(a, b, direction, this.reflexionIndex, this.color, this.intensity);
 	}
 }

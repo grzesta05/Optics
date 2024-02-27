@@ -9,12 +9,28 @@ export const getAllSurfaces: (rects: Rectangle[]) => Surface[] = (rects) => {
 };
 
 export const getRectangleSurfaces: (rect: Rectangle) => Surface[] = (rect) => {
-	return [
+	let surfaces = [
 		Surface.fromTwoPoints(rect.topLeft, rect.topRight).limit(rect.topLeft.x, rect.topRight.x),
 		Surface.fromTwoPoints(rect.topRight, rect.bottomRight).limit(rect.topRight.x, rect.bottomRight.x),
 		Surface.fromTwoPoints(rect.bottomRight, rect.bottomLeft).limit(rect.bottomRight.x, rect.bottomLeft.x),
 		Surface.fromTwoPoints(rect.bottomLeft, rect.topLeft).limit(rect.bottomLeft.x, rect.topLeft.x)
 	];
+
+	const rectCenter = rect.center();
+
+	for (let i = 0; i < surfaces.length; i++) {
+		surfaces[i].reflectivity = rect.reflectivity;
+
+		const surfaceCenter = surfaces[i].center();
+		const surfaceDirection = rectCenter.x > surfaceCenter.x ? Direction.Left : Direction.Right;
+		if (surfaceDirection === Direction.Left) {
+			surfaces[i].ltrRefractiveIndex = rect.refractiveIndex;
+		} else {
+			surfaces[i].ltrRefractiveIndex = 1 / rect.refractiveIndex;
+		}
+	}
+
+	return surfaces;
 };
 
 export const calculateLinearFromPointAndAngle = (point: Point, radians: number) => {

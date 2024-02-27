@@ -10,6 +10,7 @@ export default class Mirror extends SimulationObject {
 	constructor(x: number, y: number, degrees: number) {
 		degrees = normalizeDegrees(degrees);
 		const rect = Rectangle.fromTopLeftAndSize(new Point(x, y), 100, 2, degrees);
+		rect.reflectivity = 1;
 		super(rect, "");
 	}
 
