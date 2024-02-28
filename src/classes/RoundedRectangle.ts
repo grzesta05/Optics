@@ -10,7 +10,7 @@ class RoundedRectangle extends Rectangle {
 	centerRight: Point;
 	centerLeft: Point;
 
-	isRightDomed: boolean = true;
+	isRightDomed: boolean = false;
 	isLeftDomed: boolean = true;
 
 	rightRadius: number;
@@ -20,27 +20,25 @@ class RoundedRectangle extends Rectangle {
 	radiusCircleCentersRight: object;
 
 	getCurrentRadiusPoints() {
+		const deltaLeft = this.centerLeft.distanceTo(
+			new Point(this.radiusCircleCentersLeft.domed.x - this.leftRadius, this.centerLeft.y)
+		);
+		const deltaRight = this.centerRight.distanceTo(
+			new Point(this.radiusCircleCentersRight.domed.x - this.rightRadius, this.centerRight.y)
+		);
+		console.log(deltaLeft);
 		return {
 			//@ts-ignore
 			right: this.isRightDomed
-				? new Point(
-						this.radiusCircleCentersRight.domed.x + this.leftRadius,
-						this.radiusCircleCentersRight.domed.y
-				  )
+				? new Point(this.centerRight.x - deltaRight, this.radiusCircleCentersRight.domed.y)
 				: new Point(
-						this.radiusCircleCentersRight.concave.x - this.leftRadius,
+						this.radiusCircleCentersRight.concave.x + deltaRight,
 						this.radiusCircleCentersRight.concave.y
 				  ),
 			//@ts-ignore
 			left: this.isLeftDomed
-				? new Point(
-						this.radiusCircleCentersLeft.domed.x - this.leftRadius,
-						this.radiusCircleCentersLeft.domed.y
-				  )
-				: new Point(
-						this.radiusCircleCentersLeft.concave.x + this.leftRadius,
-						this.radiusCircleCentersLeft.concave.y
-				  ),
+				? new Point(this.radiusCircleCentersLeft.domed.x + deltaLeft, this.radiusCircleCentersLeft.domed.y)
+				: new Point(this.radiusCircleCentersLeft.concave.x - deltaLeft, this.radiusCircleCentersLeft.concave.y),
 		};
 	}
 	domeAngles() {
@@ -73,7 +71,10 @@ class RoundedRectangle extends Rectangle {
 		super.rotate(center, degrees);
 		this.centerRight.rotate(degrees, center);
 		this.centerLeft.rotate(degrees, center);
-
+		this.radiusCircleCentersLeft.domed.rotate(degrees, center);
+		this.radiusCircleCentersLeft.concave.rotate(degrees, center);
+		this.radiusCircleCentersRight.domed.rotate(degrees, center);
+		this.radiusCircleCentersRight.concave.rotate(degrees, center);
 		return this;
 	}
 	moveBy(delta: Point): RoundedRectangle {
@@ -94,16 +95,16 @@ class RoundedRectangle extends Rectangle {
 
 		const width = topLeft.distanceTo(topRight);
 		this.radiusCircleCentersLeft = {
-			domed: new Point(this.centerLeft.add(new Point(width / 2, 0)).x, this.centerLeft.y),
-			concave: new Point(this.centerLeft.add(new Point(-width / 2, 0)).x, this.centerLeft.y),
+			domed: new Point(this.centerLeft.x, this.centerLeft.y),
+			concave: new Point(this.centerLeft.x, this.centerLeft.y),
 		};
 		this.radiusCircleCentersRight = {
-			domed: new Point(this.centerRight.add(new Point(-width / 2, 0)).x, this.centerRight.y),
-			concave: new Point(this.centerRight.add(new Point(width / 2, 0)).x, this.centerRight.y),
+			domed: new Point(this.centerRight.x, this.centerRight.y),
+			concave: new Point(this.centerRight.x, this.centerRight.y),
 		};
 
-		this.leftRadius = width / 2;
-		this.rightRadius = width / 2;
+		this.leftRadius = width / 1.5;
+		this.rightRadius = width / 1;
 	}
 	static fromTopLeftAndSize(topLeft: Point, sizeX: number, sizeY: number, degrees?: number): RoundedRectangle {
 		const rect = super.fromTopLeftAndSize(topLeft, sizeX, sizeY, degrees) as RoundedRectangle;

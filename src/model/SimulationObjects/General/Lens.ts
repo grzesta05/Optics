@@ -49,16 +49,16 @@ export default class Lens extends SimulationObject {
 		this.ctx.arc(
 			...positionToCanvas(left.x, left.y, offset, sizeMultiplier),
 			bounds.leftRadius * sizeMultiplier,
-			-Math.PI / 2,
-			-Math.PI / 2 + leftAngle
+			((bounds.isLeftDomed ? 1 : -1) * Math.PI) / 2 + leftAngle,
+			((bounds.isLeftDomed ? 1 : -1) * Math.PI) / 2 + leftAngle * 2
 		);
 		this.ctx.stroke();
 		this.ctx.beginPath();
 		this.ctx.arc(
 			...positionToCanvas(right.x, right.y, offset, sizeMultiplier),
 			bounds.rightRadius * sizeMultiplier,
-			Math.PI / 2,
-			Math.PI / 2 + rightAngle
+			((bounds.isRightDomed ? -1 : 1) * Math.PI) / 2 + rightAngle,
+			((bounds.isRightDomed ? -1 : 1) * Math.PI) / 2 + rightAngle * 2
 		);
 		this.ctx.stroke();
 	}
