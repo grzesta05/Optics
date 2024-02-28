@@ -93,14 +93,13 @@ export class Particle extends LinearFunction {
 
 			const passThroughIntensity = this.intensity * this._currentReflectionSurface.pernatrability;
 			if (passThroughIntensity > 0.0001) {
+				console.log("Sranie");
 
 				const refractiveIndex = this.direction === Direction.Left ? this._currentReflectionSurface.ltrRefractiveIndex : this._currentReflectionSurface.rtlRefractiveIndex;
 
 				let theta1 = Math.abs(this.angleBetween(this._currentReflectionSurface));
 				theta1 = Math.PI / 2 - theta1;
-				console.log(toDegrees(theta1));
 				let theta2 = Math.asin(Math.sin(theta1) / refractiveIndex);
-				console.log(toDegrees(theta2));
 
 				const passThroughParticle = this.cloneWithNewPointAndAngle(
 					passThroughPoint,
