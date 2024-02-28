@@ -18,15 +18,15 @@ import ToolbarTab from "@/components/SideWindow/SideWindowTabs/ToolbarTab";
 function Start() {
 	const [selectedObject, setSelectedObject] = useState<SimulationObject>();
 	const [objectsToRender, setObjectsToRender] = useState<Array<SimulationObject>>([
-		new Laser(100, 200, 0),
-		new Laser(500, 250, 90),
-		new Laser(100, 10, 50),
-		new Laser(200, 400, 259),
-		new Laser(400, 300, 144),
+		new Laser(100, 200, 35),
+		new Laser(500, 450, 90),
+		// new Laser(100, 10, 50),
+		// new Laser(200, 400, 259),
+		// new Laser(400, 300, 144),
 	]);
 
-	const { offset, sizeMultiplier } = useAppSelector((state) => state.canvas);
-	const { isShown, position } = useAppSelector((state) => state.contextMenu);
+	const {offset, sizeMultiplier} = useAppSelector((state) => state.canvas);
+	const {isShown, position} = useAppSelector((state) => state.contextMenu);
 
 	const loadJSONSimulationBoard = async (event: FormEvent) => {
 		const fileInput = event.target as HTMLInputElement;
@@ -111,7 +111,7 @@ function Start() {
 					windows={[
 						{
 							header: "Toolbar",
-							component: <ToolbarTab setObjectsToRender={setObjectsToRender} />,
+							component: <ToolbarTab setObjectsToRender={setObjectsToRender}/>,
 						},
 						{
 							header: "Properties",

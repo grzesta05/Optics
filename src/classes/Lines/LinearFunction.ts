@@ -82,4 +82,8 @@ export class LinearFunction {
 		}
 		return rad;
 	}
+
+	public get angle(): number {
+		return Math.atan(this.a);
+	}
 }

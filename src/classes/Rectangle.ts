@@ -11,7 +11,7 @@ class Rectangle {
 	bottomLeft: Point;
 
 	public reflectivity: number = 0.1;
-	public refractiveIndex: number = 1;
+	public refractiveIndex: number = 1.31;
 
 	/**
 	 * Rotation of the rectangle in radians.

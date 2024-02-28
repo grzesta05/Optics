@@ -95,12 +95,19 @@ export class Particle extends LinearFunction {
 			if (passThroughIntensity > 0.0001) {
 
 				const refractiveIndex = this.direction === Direction.Left ? this._currentReflectionSurface.ltrRefractiveIndex : this._currentReflectionSurface.rtlRefractiveIndex;
-				console.log(refractiveIndex);
 
-				// TODO: calculate what exactly is needed here, we dont use the refractive index rn
-				const passThroughParticle = this.cloneWithNewPointAndAngle(passThroughPoint, this.angle);
+				let theta1 = Math.abs(this.angleBetween(this._currentReflectionSurface));
+				theta1 = Math.PI / 2 - theta1;
+				console.log(toDegrees(theta1));
+				let theta2 = Math.asin(Math.sin(theta1) / refractiveIndex);
+				console.log(toDegrees(theta2));
+
+				const passThroughParticle = this.cloneWithNewPointAndAngle(
+					passThroughPoint,
+					this._currentReflectionSurface.angle + Math.PI / 2 + theta2
+				);
 				passThroughParticle.intensity = passThroughIntensity;
-				passThroughParticle.reflexionIndex = this.reflexionIndex;
+				passThroughParticle.reflexionIndex = this.reflexionIndex + 1;
 				passThroughParticle.direction = this.direction;
 				if (passThroughParticle.direction === Direction.Right) {
 					passThroughParticle.lowerLimit = passThroughPoint.x;
