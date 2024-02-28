@@ -14,6 +14,7 @@ import {
 
 import { useAppSelector } from "@/lib/hooks";
 import ToolbarTab from "@/components/SideWindow/SideWindowTabs/ToolbarTab";
+import Mirror from "@/model/SimulationObjects/General/Mirror.ts";
 
 function Start() {
 	const [selectedObject, setSelectedObject] = useState<SimulationObject>();
@@ -38,20 +39,23 @@ function Start() {
 		const uploadedFile = fileInput.files![0];
 
 		try {
-			let uploadedObjects = JSON.parse(await uploadedFile.text()) as Array<SimulationObject>;
+			const uploadedObjects = JSON.parse(await uploadedFile.text()) as Array<SimulationObject>;
 
-			uploadedObjects = uploadedObjects.map(boardObject => {
-				const boardObjectCpy = structuredClone(boardObject);
-
-				boardObjectCpy.serializedFunctions.forEach(serializedFunc => {
-					console.log(serializedFunc.func);
-					(boardObjectCpy as any)[serializedFunc.name] = eval(serializedFunc.func);
-				});
-
-				return boardObjectCpy;
+			const newObjectsToRender = uploadedObjects.map(uploadedObject => {
+				switch (uploadedObject.objectType) {
+					case "Laser":
+						//@ts-ignore
+						return new Laser(...uploadedObject.constructorArgs);
+					case "Mirror":
+						//@ts-ignore
+						return new Mirror(...uploadedObject.constructorArgs);
+					default:
+						//@ts-ignore
+						return new Laser(...uploadedObject.constructorArgs);
+				}
 			});
 
-			setObjectsToRender(uploadedObjects);
+			setObjectsToRender(newObjectsToRender);
 		} catch (e) {
 			// Show notification later
 			console.error("error", e);
