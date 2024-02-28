@@ -3,7 +3,6 @@ import Point from "@/classes/Point.ts";
 import { positionToCanvas } from "@/utils/canvas.ts";
 
 export default abstract class SimulationObject {
-	serializedFunctions: { name: string, func: string }[] = [];
 	public constructorArgs: any[] = [];
 	public readonly objectType: string = "unknown";
 
