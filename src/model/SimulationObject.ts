@@ -1,12 +1,13 @@
 import Rectangle from "@/classes/Rectangle.ts";
 import Point from "@/classes/Point.ts";
 import { positionToCanvas } from "@/utils/canvas.ts";
+import RoundedRectangle from "@/classes/RoundedRectangle";
 
 export default abstract class SimulationObject {
 	imagePath: string;
 	_image: HTMLImageElement;
 
-	bounds: Rectangle;
+	bounds: Rectangle | RoundedRectangle;
 
 	protected selected: boolean = false;
 	protected ctx: CanvasRenderingContext2D | undefined;

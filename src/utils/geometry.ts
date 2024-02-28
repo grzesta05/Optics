@@ -38,9 +38,3 @@ export const calculateLinearFromPointAndAngle = (point: Point, radians: number) 
 
 	return { a, b, direction };
 };
-
-export const getParamsForArc = (start: Point, via: Point, to: Point) => {
-	const circleRadius = start.distanceTo(to);
-
-	return [via.x, via.y];
-};

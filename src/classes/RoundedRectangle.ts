@@ -1,3 +1,4 @@
+//@ts-nocheck
 import Point from "@/classes/Point.ts";
 import { toRadians } from "@/utils/algebra.ts";
 import Rectangle from "./Rectangle";
@@ -21,9 +22,25 @@ class RoundedRectangle extends Rectangle {
 	getCurrentRadiusPoints() {
 		return {
 			//@ts-ignore
-			right: this.isRightDomed ? this.radiusCircleCentersRight.domed : this.radiusCircleCentersRight.concave,
+			right: this.isRightDomed
+				? new Point(
+						this.radiusCircleCentersRight.domed.x + this.leftRadius,
+						this.radiusCircleCentersRight.domed.y
+				  )
+				: new Point(
+						this.radiusCircleCentersRight.concave.x - this.leftRadius,
+						this.radiusCircleCentersRight.concave.y
+				  ),
 			//@ts-ignore
-			left: this.isLeftDomed ? this.radiusCircleCentersLeft.domed : this.radiusCircleCentersLeft.concave,
+			left: this.isLeftDomed
+				? new Point(
+						this.radiusCircleCentersLeft.domed.x - this.leftRadius,
+						this.radiusCircleCentersLeft.domed.y
+				  )
+				: new Point(
+						this.radiusCircleCentersLeft.concave.x + this.leftRadius,
+						this.radiusCircleCentersLeft.concave.y
+				  ),
 		};
 	}
 	domeAngles() {
@@ -32,8 +49,9 @@ class RoundedRectangle extends Rectangle {
 		const h = this.topLeft.distanceTo(this.topRight);
 		//Is domed or concave
 
-		right = 2 * Math.asin(h / (this.rightRadius * 2));
-		left = 2 * Math.asin(h / (this.leftRadius * 2));
+		right = 2 * Math.asin(Math.min(Math.max(h / (this.rightRadius * 2), -1), 1));
+		left = 2 * Math.asin(Math.min(Math.max(h / (this.leftRadius * 2), -1), 1));
+
 		return { right, left };
 	}
 
@@ -62,7 +80,10 @@ class RoundedRectangle extends Rectangle {
 		super.moveBy(delta);
 		this.centerRight = this.centerRight.add(delta);
 		this.centerLeft = this.centerLeft.add(delta);
-
+		this.radiusCircleCentersLeft.domed.add(delta);
+		this.radiusCircleCentersLeft.concave.add(delta);
+		this.radiusCircleCentersRight.domed.add(delta);
+		this.radiusCircleCentersRight.concave.add(delta);
 		return this;
 	}
 
@@ -87,10 +108,7 @@ class RoundedRectangle extends Rectangle {
 	static fromTopLeftAndSize(topLeft: Point, sizeX: number, sizeY: number, degrees?: number): RoundedRectangle {
 		const rect = super.fromTopLeftAndSize(topLeft, sizeX, sizeY, degrees) as RoundedRectangle;
 
-		return {
-			...new RoundedRectangle(rect.topLeft, rect.topRight, rect.bottomRight, rect.bottomLeft),
-			...rect,
-		} as RoundedRectangle;
+		return new RoundedRectangle(rect.topLeft, rect.topRight, rect.bottomRight, rect.bottomLeft);
 	}
 }
 

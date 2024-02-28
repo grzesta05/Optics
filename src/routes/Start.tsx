@@ -14,6 +14,7 @@ import {
 
 import { useAppSelector } from "@/lib/hooks";
 import ToolbarTab from "@/components/SideWindow/SideWindowTabs/ToolbarTab";
+import Lens from "@/model/SimulationObjects/General/Lens";
 
 function Start() {
 	const [selectedObject, setSelectedObject] = useState<SimulationObject>();
@@ -23,6 +24,7 @@ function Start() {
 		new Laser(100, 10, 50),
 		new Laser(200, 400, 259),
 		new Laser(400, 300, 144),
+		new Lens(300, 300, 0),
 	]);
 
 	const { offset, sizeMultiplier } = useAppSelector((state) => state.canvas);

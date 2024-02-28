@@ -19,6 +19,7 @@ export default class Lens extends SimulationObject {
 			return;
 		}
 		const bounds = this.bounds as RoundedRectangle;
+		console.log(this.bounds instanceof RoundedRectangle);
 		this.ctx.strokeStyle = this.selected ? "green" : "yellow";
 
 		this.ctx.lineWidth = 2;
@@ -38,13 +39,27 @@ export default class Lens extends SimulationObject {
 			this.ctx.lineTo(...positionToCanvas(x2, y2, offset, sizeMultiplier));
 			this.ctx.stroke();
 		}
-		this.ctx.moveTo(...positionToCanvas(bounds.centerLeft.x, bounds.centerLeft.y, offset, sizeMultiplier));
+
 		const { left, right } = bounds.getCurrentRadiusPoints();
+
 		const leftAngle = bounds.domeAngles().left;
 		const rightAngle = bounds.domeAngles().right;
-		this.ctx.arc(left.x, left.y, bounds.leftRadius, 0, leftAngle);
+		this.ctx.beginPath();
+
+		this.ctx.arc(
+			...positionToCanvas(left.x, left.y, offset, sizeMultiplier),
+			bounds.leftRadius * sizeMultiplier,
+			-Math.PI / 2,
+			-Math.PI / 2 + leftAngle
+		);
 		this.ctx.stroke();
-		this.ctx.arc(right.x, right.y, bounds.rightRadius, 0, rightAngle);
+		this.ctx.beginPath();
+		this.ctx.arc(
+			...positionToCanvas(right.x, right.y, offset, sizeMultiplier),
+			bounds.rightRadius * sizeMultiplier,
+			Math.PI / 2,
+			Math.PI / 2 + rightAngle
+		);
 		this.ctx.stroke();
 	}
 	draw(offset: Point, sizeMultiplier: number): void {}
