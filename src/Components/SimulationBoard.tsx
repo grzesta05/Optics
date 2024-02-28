@@ -7,7 +7,7 @@ import { isSender } from "@/model/SimulationObjects/Sender.ts";
 import { canvasToPosition, positionToCanvas } from "@/utils/canvas.ts";
 import { getAllSurfaces } from "@/utils/geometry.ts";
 import { Particle } from "@/classes/Lines/Particle.ts";
-import Laser from "@/model/SimulationObjects/Senders/Laser";
+import Laser from "@/model/SimulationObjects/Senders/Frog";
 
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { setOffset, setSizeMultiplier } from "@/lib/slices/canvasSlice";

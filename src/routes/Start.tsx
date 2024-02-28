@@ -1,7 +1,7 @@
 import styles from "@/styles/routes/Start.module.css";
 import SimulationBoard from "@/components/SimulationBoard";
 import SideWindow from "@/components/SideWindow/SideWindow";
-import Laser from "@/model/SimulationObjects/Senders/Laser";
+import Frog from "@/model/SimulationObjects/Senders/Frog";
 import { FormEvent, useState } from "react";
 import SimulationObject from "@/model/SimulationObject.ts";
 import UpperMenu from "@/components/UpperMenu.tsx";
@@ -18,11 +18,11 @@ import ToolbarTab from "@/components/SideWindow/SideWindowTabs/ToolbarTab";
 function Start() {
 	const [selectedObject, setSelectedObject] = useState<SimulationObject>();
 	const [objectsToRender, setObjectsToRender] = useState<Array<SimulationObject>>([
-		new Laser(100, 200, 0),
-		new Laser(500, 250, 90),
-		new Laser(100, 10, 50),
-		new Laser(200, 400, 259),
-		new Laser(400, 300, 144),
+		new Frog(100, 200, 0),
+		new Frog(500, 250, 90),
+		new Frog(100, 10, 50),
+		new Frog(200, 400, 259),
+		new Frog(400, 300, 144),
 	]);
 
 	const { offset, sizeMultiplier } = useAppSelector((state) => state.canvas);
