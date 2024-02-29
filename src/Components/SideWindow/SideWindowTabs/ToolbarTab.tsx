@@ -4,6 +4,7 @@ import Mirror from "@/model/SimulationObjects/General/Mirror.ts";
 import Frog from "@/model/SimulationObjects/Senders/Frog";
 import Laser from "@/model/SimulationObjects/Senders/Laser";
 import Torch from "@/model/SimulationObjects/Senders/Torch";
+import Bulb from "@/model/SimulationObjects/Senders/Bulb";
 
 type Props = {
 	setObjectsToRender: React.Dispatch<React.SetStateAction<SimulationObject[]>>;
@@ -11,7 +12,7 @@ type Props = {
 
 export default function ToolbarTab({ setObjectsToRender }: Props) {
 	const categories = [
-		{ categoryName: "Light source", objects: [Laser, Torch] },
+		{ categoryName: "Light source", objects: [Laser, Torch, Bulb] },
 		{ categoryName: "Mirrors", objects: [Mirror] },
 		{ categoryName: "Frog", objects: [Frog] },
 	];
