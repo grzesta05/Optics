@@ -13,7 +13,7 @@ export const getRectangleSurfaces: (rect: Rectangle) => Surface[] = (rect) => {
 		Surface.fromTwoPoints(rect.topLeft, rect.topRight).limit(rect.topLeft.x, rect.topRight.x),
 		Surface.fromTwoPoints(rect.topRight, rect.bottomRight).limit(rect.topRight.x, rect.bottomRight.x),
 		Surface.fromTwoPoints(rect.bottomRight, rect.bottomLeft).limit(rect.bottomRight.x, rect.bottomLeft.x),
-		Surface.fromTwoPoints(rect.bottomLeft, rect.topLeft).limit(rect.bottomLeft.x, rect.topLeft.x)
+		Surface.fromTwoPoints(rect.bottomLeft, rect.topLeft).limit(rect.bottomLeft.x, rect.topLeft.x),
 	];
 };
 
@@ -36,5 +36,5 @@ export const calculateLinearFromPointAndAngle = (point: Point, radians: number) 
 		direction = Direction.Left;
 	}
 
-	return {a, b, direction};
+	return { a, b, direction };
 };

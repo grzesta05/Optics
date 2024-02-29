@@ -24,6 +24,7 @@ function Start() {
 		new Laser(100, 10, 50),
 		new Laser(200, 400, 259),
 		new Laser(400, 300, 144),
+		new Lens(300, 300, 0),
 	]);
 
 	const { offset, sizeMultiplier } = useAppSelector((state) => state.canvas);
@@ -78,8 +79,6 @@ function Start() {
 
 		document.body.removeChild(tmpElement);
 	};
-
-	console.log(objectsToRender[0])
 
 	const handleSelectObject = (object: SimulationObject | undefined) => {
 		console.log("Selected object", object, selectedObject);
