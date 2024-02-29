@@ -1,6 +1,7 @@
 import Rectangle from "@/classes/Rectangle.ts";
 import Point from "@/classes/Point.ts";
 import { positionToCanvas } from "@/utils/canvas.ts";
+import { toDegrees } from "@/utils/algebra";
 
 export default abstract class SimulationObject {
 	imagePath: string;
@@ -57,6 +58,61 @@ export default abstract class SimulationObject {
 
 	toggleSelected() {
 		this.selected = !this.selected;
+	}
+
+	get objectProperties() {
+		return {
+			x: {
+				inputType: "number",
+				minBound: -Infinity,
+				maxBound: Infinity,
+				step: 1,
+				value: this.roundValue(this.bounds.center().x, 1),
+				setProperty: (x: number) => {
+					const currentCenter = this.bounds.center();
+					const newCenter = new Point(x, this.bounds.center().y);
+					const delta = newCenter.subtract(currentCenter);
+
+					const newBounds = this.bounds.moveBy(delta);
+					this.bounds = newBounds;
+				},
+			},
+			y: {
+				inputType: "number",
+				minBound: -Infinity,
+				maxBound: Infinity,
+				step: 1,
+				value: this.roundValue(this.bounds.center().y, 1),
+				setProperty: (y: number) => {
+					const currentCenter = this.bounds.center();
+					const newCenter = new Point(this.bounds.center().x, y);
+					const delta = newCenter.subtract(currentCenter);
+
+					const newBounds = this.bounds.moveBy(delta);
+					this.bounds = newBounds;
+				},
+			},
+			rotation: {
+				inputType: "number",
+				minBound: 0,
+				maxBound: 360,
+				step: 0.1,
+				value: this.roundValue(toDegrees(this.bounds.rotation), 0.1),
+				setProperty: (rotation: number) => {
+					const currentRotation = toDegrees(this.bounds.rotation);
+					const rotationDelta = rotation - currentRotation;
+
+					const currentCenter = this.bounds.center();
+					const newBounds = this.bounds.rotate(currentCenter, rotationDelta);
+
+					this.bounds = newBounds;
+				},
+			},
+		};
+	}
+
+	private roundValue(value: number, step: number) {
+		return Math.round(value / step) * step;
 	}
 }
 

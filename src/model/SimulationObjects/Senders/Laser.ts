@@ -7,8 +7,9 @@ import { positionToCanvas } from "@/utils/canvas";
 
 export default class Laser extends Sender {
 	public static imagePath = "/img/laser-pen.png";
+	private width = 9;
 
-	constructor(x: number, y: number, degrees: number) {
+	constructor(x: number, y: number, degrees: number, width: number = 9) {
 		degrees = normalizeDegrees(degrees);
 		const rect = Rectangle.fromTopLeftAndSize(new Point(x, y), 150, 50, degrees);
 
@@ -16,10 +17,16 @@ export default class Laser extends Sender {
 		const colors = ["#e81416", "#ffa500", "#faeb36", "#79c314", "#487de7", "#4b369d", "#70369d"];
 		let lasers: Particle[] = [];
 
+		if (width % 2 === 0) {
+			width++;
+		}
+
+		const mid = Math.floor(width / 2);
+
 		for (let i = 0; i < colors.length; i++) {
-			for (let j = 0; j < 9; j++) {
+			for (let j = 0; j < width; j++) {
 				const startPoint = Point.midpoint(rect.topRight, rect.bottomRight).add(
-					new Point(0.1, (j - 4) * 1).rotate(toDegrees(rect.rotation))
+					new Point(0.1, (j - mid) * 0.1).rotate(toDegrees(rect.rotation))
 				);
 				const centerX = startPoint.x;
 
@@ -37,28 +44,36 @@ export default class Laser extends Sender {
 		}
 
 		super(rect, "/img/laser-pen.png", lasers);
+		this.width = width;
 	}
 
 	public recalculateParticles() {
-		const startPoint = Point.midpoint(this.bounds.topRight, this.bounds.bottomRight).add(
-			new Point(0.1, 0).rotate(toDegrees(this.bounds.rotation))
-		);
+		const mid = Math.floor(this.width / 2);
+		const colors = ["#e81416", "#ffa500", "#faeb36", "#79c314", "#487de7", "#4b369d", "#70369d"];
+		let lasers: Particle[] = [];
 
-		let newParticles: Particle[] = [];
-		for (const particle of this.particles) {
-			const newParticle = particle.cloneWithNewPointAndAngle(startPoint, this.bounds.rotation);
-			let degrees = toDegrees(this.bounds.rotation) % 360;
-			if (degrees < 0) {
-				degrees += 360;
+		for (let i = 0; i < colors.length; i++) {
+			for (let j = 0; j < this.width; j++) {
+				const startPoint = Point.midpoint(this.bounds.topRight, this.bounds.bottomRight).add(
+					new Point(0.1, (j - mid) * 0.1).rotate(toDegrees(this.bounds.rotation))
+				);
+				const centerX = startPoint.x;
+
+				const laser = Particle.fromPointAndAngle(startPoint, this.bounds.rotation);
+				laser.color = colors[i];
+
+				const degrees = toDegrees(this.bounds.rotation) % 360;
+
+				if (degrees % 360 > 90 && degrees % 360 < 270) {
+					laser.upperLimit = centerX;
+				} else {
+					laser.lowerLimit = centerX;
+				}
+
+				lasers.push(laser);
 			}
-			if (degrees > 90 && degrees < 270) {
-				newParticle.upperLimit = startPoint.x;
-			} else {
-				newParticle.lowerLimit = startPoint.x;
-			}
-			newParticles.push(newParticle);
 		}
-		this.particles = newParticles;
+		this.particles = lasers;
 	}
 
 	draw(offset: Point, sizeMultiplier: number): void {
@@ -103,8 +118,26 @@ export default class Laser extends Sender {
 			context?.restore();
 		}
 	}
+
+	public get objectProperties() {
+		return {
+			...super.objectProperties,
+			width: {
+				inputType: "number",
+				minBound: 9,
+				maxBound: 199,
+				step: 1,
+				value: this.width,
+				setProperty: (width: number) => {
+					this.width = width;
+					this.recalculateParticles();
+				},
+			},
+		};
+	}
 }
 
 export const isLaser = (object: any): object is Laser => {
 	return object instanceof Laser;
 };
+

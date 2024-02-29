@@ -19,10 +19,10 @@ import ToolbarTab from "@/components/SideWindow/SideWindowTabs/ToolbarTab";
 function Start() {
 	const [selectedObject, setSelectedObject] = useState<SimulationObject>();
 	const [objectsToRender, setObjectsToRender] = useState<Array<SimulationObject>>([
-		new Frog(100, 10, 50),
-		new Frog(200, 400, 259),
-		new Frog(400, 300, 144),
-		new Laser(100, 100, 0),
+		new Frog(100, 10, 45),
+		new Frog(200, 400, 45),
+		new Frog(400, 300, 45),
+		new Laser(100, 100, 0, 99),
 	]);
 
 	const { offset, sizeMultiplier } = useAppSelector((state) => state.canvas);
@@ -100,7 +100,7 @@ function Start() {
 				onImport={loadJSONSimulationBoard}
 				onExport={saveSimulationBoardJSON}
 				onRefresh={() => {
-					setObjectsToRender((prev) => prev)
+					setObjectsToRender((prev) => prev);
 					console.log("refreshed");
 				}}
 			/>
@@ -121,21 +121,23 @@ function Start() {
 							component:
 								selectedObject != undefined ? (
 									<PropertiesTab
-										properties={mapSimulationObjectToProperties(selectedObject)}
-										setProperties={(properties: SimulationObjectPropertiesType) => {
-											const newObject = changeSimulationObjectByProperties(
-												selectedObject,
-												properties
-											);
-											const indexOfTheOldObject = objectsToRender.findIndex(
-												(object) => object == selectedObject
-											);
-											setSelectedObject(newObject as SimulationObject);
-											setObjectsToRender((old) => {
-												old[indexOfTheOldObject] = newObject as SimulationObject;
-												return [...old] as SimulationObject[];
-											});
-										}}
+										// properties={mapSimulationObjectToProperties(selectedObject)}
+										// setProperties={(properties: SimulationObjectPropertiesType) => {
+										// 	const newObject = changeSimulationObjectByProperties(
+										// 		selectedObject,
+										// 		properties
+										// 	);
+										// 	const indexOfTheOldObject = objectsToRender.findIndex(
+										// 		(object) => object == selectedObject
+										// 	);
+										// 	setSelectedObject(newObject as SimulationObject);
+										// 	setObjectsToRender((old) => {
+										// 		old[indexOfTheOldObject] = newObject as SimulationObject;
+										// 		return [...old] as SimulationObject[];
+										// 	});
+										// }}
+										selectedObject={selectedObject}
+										setObjectsToRender={setObjectsToRender}
 									/>
 								) : (
 									<></>

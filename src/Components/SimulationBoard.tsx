@@ -98,6 +98,7 @@ export default function SimulationBoard({ objectsToRender, selectObject, setObje
 			setObjectsToRender([...objectsToRender]);
 		}
 	};
+
 	const wheelResizeHandle: React.WheelEventHandler<HTMLCanvasElement> = (event) => {
 		const canvasPosition = canvasRef.current?.getBoundingClientRect();
 		const x = event.clientX - (canvasPosition?.left ?? 0);
@@ -153,15 +154,15 @@ export default function SimulationBoard({ objectsToRender, selectObject, setObje
 		for (const object of objectsToRender) {
 			if (isSender(object)) {
 				for (const particle of object.particles as Particle[]) {
-					// if (!particle.hasReflectionsCalculated) {
-					// 	particle.calculateReflections(possibleLimits, null);
-					// }
-					// for (const child of particle.childReflections) {
-					// 	if (child.childReflections.length > 0) {
-					// 		console.log("child has children");
-					// 	}
-					// 	drawLaser(child, renderBounds, context);
-					// }
+					if (!particle.hasReflectionsCalculated) {
+						particle.calculateReflections(possibleLimits, null);
+					}
+					for (const child of particle.childReflections) {
+						if (child.childReflections.length > 0) {
+							console.log("child has children");
+						}
+						drawLaser(child, renderBounds, context);
+					}
 					drawLaser(particle, renderBounds, context);
 				}
 			}
@@ -188,12 +189,11 @@ export default function SimulationBoard({ objectsToRender, selectObject, setObje
 		const laserStart = new Point(lowerBound, particle.at(lowerBound));
 		const laserEnd = new Point(upperBound, particle.at(upperBound));
 
-
 		context.globalCompositeOperation = "lighter";
 
 		context.beginPath();
 		context.strokeStyle = particle.color;
-		context.lineWidth = 0.2 * sizeMultiplier;
+		context.lineWidth = 0.1 * sizeMultiplier;
 		context.moveTo(...positionToCanvas(laserStart.x, laserStart.y, offset, sizeMultiplier));
 		context.lineTo(...positionToCanvas(laserEnd.x, laserEnd.y, offset, sizeMultiplier));
 		context.stroke();
@@ -202,6 +202,8 @@ export default function SimulationBoard({ objectsToRender, selectObject, setObje
 		context.textBaseline = "middle";
 		context.font = "50px Arial";
 		context.fillStyle = particle.color;
+
+		context.globalCompositeOperation = "source-over";
 	};
 
 	const elementDragStartHandler = (e: React.MouseEvent<HTMLCanvasElement>) => {

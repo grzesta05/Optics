@@ -70,7 +70,7 @@ export class Particle extends LinearFunction {
 				new Point(x, 0).rotate(toDegrees(this.angle))
 			);
 			const childReflection = this.rotateWithAPoint(angleBetween * 2, actualReflectionPoint);
-
+			childReflection.color = this.color;
 			childReflection.reflexionIndex = this.reflexionIndex + 1;
 			if (childReflection.direction === Direction.Right) {
 				childReflection.lowerLimit = actualReflectionPoint.x;

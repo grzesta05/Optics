@@ -12,6 +12,12 @@ export default abstract class Sender extends SimulationObject {
 	}
 
 	abstract recalculateParticles(): void;
+
+	public get objectProperties() {
+		return {
+			...super.objectProperties,
+		}
+	}
 }
 
 export function isSender(object: SimulationObject): object is Sender {
