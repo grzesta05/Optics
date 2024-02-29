@@ -15,14 +15,18 @@ import {
 
 import { useAppSelector } from "@/lib/hooks";
 import ToolbarTab from "@/components/SideWindow/SideWindowTabs/ToolbarTab";
+import Torch from "@/model/SimulationObjects/Senders/Torch";
+import Bulb from "@/model/SimulationObjects/Senders/Bulb";
 
 function Start() {
 	const [selectedObject, setSelectedObject] = useState<SimulationObject>();
 	const [objectsToRender, setObjectsToRender] = useState<Array<SimulationObject>>([
-		new Frog(100, 10, 45),
-		new Frog(200, 400, 45),
-		new Frog(400, 300, 45),
-		new Laser(100, 100, 0, 99),
+		new Frog(100, 10, 50),
+		new Frog(200, 400, 259),
+		new Frog(400, 300, 144),
+		new Laser(100, 100, 0),
+		new Torch(300, 300, 0),
+		new Bulb(500, 500, 0),
 	]);
 
 	const { offset, sizeMultiplier } = useAppSelector((state) => state.canvas);
