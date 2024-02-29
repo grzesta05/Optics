@@ -5,38 +5,37 @@ import { normalizeDegrees, toDegrees } from "@/utils/algebra.ts";
 import { Particle } from "@/classes/Lines/Particle.ts";
 import { positionToCanvas } from "@/utils/canvas";
 
-export default class Laser extends Sender {
-	public static imagePath = "/img/laser-pen.png";
+export default class Frog extends Sender {
+	public static imagePath = "/img/frog.png";
 
 	constructor(x: number, y: number, degrees: number) {
 		degrees = normalizeDegrees(degrees);
-		const rect = Rectangle.fromTopLeftAndSize(new Point(x, y), 150, 50, degrees);
+		const rect = Rectangle.fromTopLeftAndSize(new Point(x, y), 100, 100, degrees);
+
+		const startPoint = Point.midpoint(rect.topRight, rect.bottomRight).add(
+			new Point(0.1, 0).rotate(toDegrees(rect.rotation))
+		);
 
 		// colors that make up white light
-		const colors = ["#e81416", "#ffa500", "#faeb36", "#79c314", "#487de7", "#4b369d", "#70369d"];
+		const colors = ["#FF0000"];
+		let centerX = startPoint.x;
 		let lasers: Particle[] = [];
 
 		for (let i = 0; i < colors.length; i++) {
-			for (let j = 0; j < 9; j++) {
-				const startPoint = Point.midpoint(rect.topRight, rect.bottomRight).add(
-					new Point(0.1, (j - 4) * 1).rotate(toDegrees(rect.rotation))
-				);
-				const centerX = startPoint.x;
+			const laser = Particle.fromPointAndAngle(startPoint, rect.rotation);
+			laser.intensity = 1 / colors.length;
+			laser.color = colors[i];
 
-				const laser = Particle.fromPointAndAngle(startPoint, rect.rotation);
-				laser.color = colors[i];
-
-				if (degrees % 360 > 90 && degrees % 360 < 270) {
-					laser.upperLimit = centerX;
-				} else {
-					laser.lowerLimit = centerX;
-				}
-
-				lasers.push(laser);
+			if (degrees % 360 > 90 && degrees % 360 < 270) {
+				laser.upperLimit = centerX;
+			} else {
+				laser.lowerLimit = centerX;
 			}
+
+			lasers.push(laser);
 		}
 
-		super(rect, "/img/laser-pen.png", lasers);
+		super(rect, "/img/frog.png", lasers);
 	}
 
 	public recalculateParticles() {
@@ -105,6 +104,6 @@ export default class Laser extends Sender {
 	}
 }
 
-export const isLaser = (object: any): object is Laser => {
-	return object instanceof Laser;
+export const isFrog = (object: any): object is Frog => {
+	return object instanceof Frog;
 };

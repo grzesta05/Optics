@@ -3,12 +3,10 @@ import React, { Dispatch, SetStateAction, useEffect, useMemo, useRef, useState }
 import styles from "@styles/Components/SimulationBoard.module.css";
 import Point from "@/classes/Point.ts";
 import Rectangle from "@/classes/Rectangle.ts";
-import { isSender } from "@/model/SimulationObjects/Sender.ts";
+import Sender, { isSender } from "@/model/SimulationObjects/Sender.ts";
 import { canvasToPosition, positionToCanvas } from "@/utils/canvas.ts";
 import { getAllSurfaces } from "@/utils/geometry.ts";
 import { Particle } from "@/classes/Lines/Particle.ts";
-import Laser from "@/model/SimulationObjects/Senders/Laser";
-
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { setOffset, setSizeMultiplier } from "@/lib/slices/canvasSlice";
 import { setIsShown, setPosition } from "@/lib/slices/contextMenuSlice";
@@ -93,8 +91,8 @@ export default function SimulationBoard({ objectsToRender, selectObject, setObje
 
 			selectedObject.bounds.moveBy(new Point(diffX, diffY));
 
-			if (selectedObject instanceof Laser) {
-				(selectedObject as Laser).recalculateParticles();
+			if (selectedObject instanceof Sender) {
+				(selectedObject as Sender).recalculateParticles();
 			}
 
 			setObjectsToRender([...objectsToRender]);
