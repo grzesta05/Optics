@@ -12,27 +12,28 @@ export default class Laser extends Sender {
 		degrees = normalizeDegrees(degrees);
 		const rect = Rectangle.fromTopLeftAndSize(new Point(x, y), 100, 100, degrees);
 
-		const startPoint = Point.midpoint(rect.topRight, rect.bottomRight).add(
-			new Point(0.1, 0).rotate(toDegrees(rect.rotation))
-		);
-
 		// colors that make up white light
-		const colors = ["#FF0000"];
-		let centerX = startPoint.x;
+		const colors = ["#e81416", "#ffa500", "#faeb36", "#79c314", "#487de7", "#4b369d", "#70369d"];
 		let lasers: Particle[] = [];
 
 		for (let i = 0; i < colors.length; i++) {
-			const laser = Particle.fromPointAndAngle(startPoint, rect.rotation);
-			laser.intensity = 1 / colors.length;
-			laser.color = colors[i];
+			for (let j = 0; j < 9; j++) {
+				const startPoint = Point.midpoint(rect.topRight, rect.bottomRight).add(
+					new Point(0.1, (j - 4) * 1).rotate(toDegrees(rect.rotation))
+				);
+				const centerX = startPoint.x;
 
-			if (degrees % 360 > 90 && degrees % 360 < 270) {
-				laser.upperLimit = centerX;
-			} else {
-				laser.lowerLimit = centerX;
+				const laser = Particle.fromPointAndAngle(startPoint, rect.rotation);
+				laser.color = colors[i];
+
+				if (degrees % 360 > 90 && degrees % 360 < 270) {
+					laser.upperLimit = centerX;
+				} else {
+					laser.lowerLimit = centerX;
+				}
+
+				lasers.push(laser);
 			}
-
-			lasers.push(laser);
 		}
 
 		super(rect, "/img/laser.png", lasers);
