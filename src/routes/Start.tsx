@@ -2,6 +2,7 @@ import styles from "@/styles/routes/Start.module.css";
 import SimulationBoard from "@/components/SimulationBoard";
 import SideWindow from "@/components/SideWindow/SideWindow";
 import Frog from "@/model/SimulationObjects/Senders/Frog";
+import Laser from "@/model/SimulationObjects/Senders/Laser";
 import { FormEvent, useState } from "react";
 import SimulationObject from "@/model/SimulationObject.ts";
 import UpperMenu from "@/components/UpperMenu.tsx";
@@ -18,11 +19,10 @@ import ToolbarTab from "@/components/SideWindow/SideWindowTabs/ToolbarTab";
 function Start() {
 	const [selectedObject, setSelectedObject] = useState<SimulationObject>();
 	const [objectsToRender, setObjectsToRender] = useState<Array<SimulationObject>>([
-		new Frog(100, 200, 0),
-		new Frog(500, 250, 90),
 		new Frog(100, 10, 50),
 		new Frog(200, 400, 259),
 		new Frog(400, 300, 144),
+		new Laser(100, 100, 0),
 	]);
 
 	const { offset, sizeMultiplier } = useAppSelector((state) => state.canvas);
@@ -99,7 +99,10 @@ function Start() {
 			<UpperMenu
 				onImport={loadJSONSimulationBoard}
 				onExport={saveSimulationBoardJSON}
-				onRefresh={() => setObjectsToRender((prev) => prev)}
+				onRefresh={() => {
+					setObjectsToRender((prev) => prev)
+					console.log("refreshed");
+				}}
 			/>
 			<div className={styles.workSpace}>
 				<SimulationBoard
@@ -130,7 +133,6 @@ function Start() {
 											setSelectedObject(newObject as SimulationObject);
 											setObjectsToRender((old) => {
 												old[indexOfTheOldObject] = newObject as SimulationObject;
-												console.log(old);
 												return [...old] as SimulationObject[];
 											});
 										}}
