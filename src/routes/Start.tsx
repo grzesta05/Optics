@@ -15,6 +15,7 @@ import {
 
 import { useAppSelector } from "@/lib/hooks";
 import ToolbarTab from "@/components/SideWindow/SideWindowTabs/ToolbarTab";
+import Torch from "@/model/SimulationObjects/Senders/Torch";
 
 function Start() {
 	const [selectedObject, setSelectedObject] = useState<SimulationObject>();
@@ -23,6 +24,7 @@ function Start() {
 		new Frog(200, 400, 259),
 		new Frog(400, 300, 144),
 		new Laser(100, 100, 0),
+		new Torch(300, 300, 0),
 	]);
 
 	const { offset, sizeMultiplier } = useAppSelector((state) => state.canvas);

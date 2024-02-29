@@ -3,6 +3,7 @@ import styles from "@/styles/Components/SideWindow/SideWindowTabs/ToolbarTab.mod
 import Mirror from "@/model/SimulationObjects/General/Mirror.ts";
 import Frog from "@/model/SimulationObjects/Senders/Frog";
 import Laser from "@/model/SimulationObjects/Senders/Laser";
+import Torch from "@/model/SimulationObjects/Senders/Torch";
 
 type Props = {
 	setObjectsToRender: React.Dispatch<React.SetStateAction<SimulationObject[]>>;
@@ -10,7 +11,7 @@ type Props = {
 
 export default function ToolbarTab({ setObjectsToRender }: Props) {
 	const categories = [
-		{ categoryName: "Light source", objects: [Laser] },
+		{ categoryName: "Light source", objects: [Laser, Torch] },
 		{ categoryName: "Mirrors", objects: [Mirror] },
 		{ categoryName: "Frog", objects: [Frog] },
 	];
