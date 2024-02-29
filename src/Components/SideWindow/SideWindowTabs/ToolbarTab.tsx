@@ -5,6 +5,7 @@ import Frog from "@/model/SimulationObjects/Senders/Frog";
 import Laser from "@/model/SimulationObjects/Senders/Laser";
 import Torch from "@/model/SimulationObjects/Senders/Torch";
 import Bulb from "@/model/SimulationObjects/Senders/Bulb";
+import Prism from "@/model/SimulationObjects/General/Prism";
 
 type Props = {
 	setObjectsToRender: React.Dispatch<React.SetStateAction<SimulationObject[]>>;
@@ -13,7 +14,7 @@ type Props = {
 export default function ToolbarTab({ setObjectsToRender }: Props) {
 	const categories = [
 		{ categoryName: "Light source", objects: [Laser, Torch, Bulb] },
-		{ categoryName: "Mirrors", objects: [Mirror] },
+		{ categoryName: "Mirrors", objects: [Mirror, Prism] },
 		{ categoryName: "Frog", objects: [Frog] },
 	];
 
@@ -29,7 +30,11 @@ export default function ToolbarTab({ setObjectsToRender }: Props) {
 						<h3>{category.categoryName}</h3>
 						<ul>
 							{category.objects.map((object) => (
-								<li onClick={() => addObject(object as any)} className={styles.object} key={object.name}>
+								<li
+									onClick={() => addObject(object as any)}
+									className={styles.object}
+									key={object.name}
+								>
 									<img src={object.imagePath} alt={object.name} />
 									<h4>{object.name}</h4>
 								</li>
