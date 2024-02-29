@@ -3,6 +3,9 @@ import Point from "@/classes/Point.ts";
 import { positionToCanvas } from "@/utils/canvas.ts";
 
 export default abstract class SimulationObject {
+	public constructorArgs: any[] = [];
+	public readonly objectType: string = "unknown";
+
 	imagePath: string;
 	_image: HTMLImageElement;
 
