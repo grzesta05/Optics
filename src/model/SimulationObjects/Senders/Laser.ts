@@ -6,11 +6,11 @@ import { Particle } from "@/classes/Lines/Particle.ts";
 import { positionToCanvas } from "@/utils/canvas";
 
 export default class Laser extends Sender {
-	public static imagePath = "/img/laser.png";
+	public static imagePath = "/img/laser-pen.png";
 
 	constructor(x: number, y: number, degrees: number) {
 		degrees = normalizeDegrees(degrees);
-		const rect = Rectangle.fromTopLeftAndSize(new Point(x, y), 100, 100, degrees);
+		const rect = Rectangle.fromTopLeftAndSize(new Point(x, y), 150, 50, degrees);
 
 		const startPoint = Point.midpoint(rect.topRight, rect.bottomRight).add(
 			new Point(0.1, 0).rotate(toDegrees(rect.rotation))
@@ -35,7 +35,7 @@ export default class Laser extends Sender {
 			lasers.push(laser);
 		}
 
-		super(rect, "/img/laser.png", lasers);
+		super(rect, "/img/laser-pen.png", lasers);
 	}
 
 	public recalculateParticles() {
