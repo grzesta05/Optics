@@ -3,12 +3,10 @@ import React, { Dispatch, SetStateAction, useEffect, useMemo, useRef, useState }
 import styles from "@styles/Components/SimulationBoard.module.css";
 import Point from "@/classes/Point.ts";
 import Rectangle from "@/classes/Rectangle.ts";
-import { isSender } from "@/model/SimulationObjects/Sender.ts";
+import Sender, { isSender } from "@/model/SimulationObjects/Sender.ts";
 import { canvasToPosition, positionToCanvas } from "@/utils/canvas.ts";
 import { getAllSurfaces } from "@/utils/geometry.ts";
 import { Particle } from "@/classes/Lines/Particle.ts";
-import Laser from "@/model/SimulationObjects/Senders/Laser";
-
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { setOffset, setSizeMultiplier } from "@/lib/slices/canvasSlice";
 import { setIsShown, setPosition } from "@/lib/slices/contextMenuSlice";
@@ -93,13 +91,14 @@ export default function SimulationBoard({ objectsToRender, selectObject, setObje
 
 			selectedObject.bounds.moveBy(new Point(diffX, diffY));
 
-			if (selectedObject instanceof Laser) {
-				(selectedObject as Laser).recalculateParticles();
+			if (selectedObject instanceof Sender) {
+				(selectedObject as Sender).recalculateParticles();
 			}
 
 			setObjectsToRender([...objectsToRender]);
 		}
 	};
+
 	const wheelResizeHandle: React.WheelEventHandler<HTMLCanvasElement> = (event) => {
 		const canvasPosition = canvasRef.current?.getBoundingClientRect();
 		const x = event.clientX - (canvasPosition?.left ?? 0);
@@ -140,8 +139,6 @@ export default function SimulationBoard({ objectsToRender, selectObject, setObje
 	const animate = () => {
 		const ctx = canvasRef.current as HTMLCanvasElement;
 
-		console.log(ctx.width);
-
 		const context = ctx.getContext("2d");
 		if (!context) return;
 
@@ -160,15 +157,12 @@ export default function SimulationBoard({ objectsToRender, selectObject, setObje
 					if (!particle.hasReflectionsCalculated) {
 						particle.calculateReflections(possibleLimits, null);
 					}
-
 					for (const child of particle.childReflections) {
 						if (child.childReflections.length > 0) {
 							console.log("child has children");
 						}
-
 						drawLaser(child, renderBounds, context);
 					}
-
 					drawLaser(particle, renderBounds, context);
 				}
 			}
@@ -195,9 +189,11 @@ export default function SimulationBoard({ objectsToRender, selectObject, setObje
 		const laserStart = new Point(lowerBound, particle.at(lowerBound));
 		const laserEnd = new Point(upperBound, particle.at(upperBound));
 
+		context.globalCompositeOperation = "lighter";
+
 		context.beginPath();
-		context.strokeStyle = particle.color + Math.floor(particle.intensity * 255).toString(16);
-		context.lineWidth = 2 * sizeMultiplier;
+		context.strokeStyle = particle.color;
+		context.lineWidth = 0.1 * sizeMultiplier;
 		context.moveTo(...positionToCanvas(laserStart.x, laserStart.y, offset, sizeMultiplier));
 		context.lineTo(...positionToCanvas(laserEnd.x, laserEnd.y, offset, sizeMultiplier));
 		context.stroke();
@@ -207,12 +203,7 @@ export default function SimulationBoard({ objectsToRender, selectObject, setObje
 		context.font = "50px Arial";
 		context.fillStyle = particle.color;
 
-		// if (particle.direction == Direction.Left) {
-		// 	context.fillText("←", ...positionToCanvas(laserEnd.x, laserEnd.y, offset, sizeMultiplier));
-		// 	return;
-		// }
-
-		// context.fillText("→", ...positionToCanvas(laserStart.x, laserStart.y, offset, sizeMultiplier));
+		context.globalCompositeOperation = "source-over";
 	};
 
 	const elementDragStartHandler = (e: React.MouseEvent<HTMLCanvasElement>) => {

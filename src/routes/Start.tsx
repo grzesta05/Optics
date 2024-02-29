@@ -1,31 +1,22 @@
 import styles from "@/styles/routes/Start.module.css";
 import SimulationBoard from "@/components/SimulationBoard";
 import SideWindow from "@/components/SideWindow/SideWindow";
+import Frog from "@/model/SimulationObjects/Senders/Frog";
 import Laser from "@/model/SimulationObjects/Senders/Laser";
 import { FormEvent, useState } from "react";
 import SimulationObject from "@/model/SimulationObject.ts";
 import UpperMenu from "@/components/UpperMenu.tsx";
 import PropertiesTab from "@/components/SideWindow/SideWindowTabs/PropertiesTab";
-import {
-	SimulationObjectPropertiesType,
-	mapSimulationObjectToProperties,
-	changeSimulationObjectByProperties,
-} from "@/properties/SimulationObjectProperties/SimulationProperties";
 
 import { useAppSelector } from "@/lib/hooks";
 import ToolbarTab from "@/components/SideWindow/SideWindowTabs/ToolbarTab";
 import Mirror from "@/model/SimulationObjects/General/Mirror.ts";
+import Torch from "@/model/SimulationObjects/Senders/Torch";
+import Bulb from "@/model/SimulationObjects/Senders/Bulb";
 
 function Start() {
 	const [selectedObject, setSelectedObject] = useState<SimulationObject>();
-	const [objectsToRender, setObjectsToRender] = useState<Array<SimulationObject>>([
-		new Laser(100, 200, 0),
-		new Laser(500, 250, 90),
-		new Laser(100, 10, 50),
-		new Laser(200, 400, 259),
-		new Laser(400, 300, 144),
-		new Lens(300, 300, 0),
-	]);
+	const [objectsToRender, setObjectsToRender] = useState<Array<SimulationObject>>([new Laser(0, 0, 0)]);
 
 	const { offset, sizeMultiplier } = useAppSelector((state) => state.canvas);
 	const { isShown, position } = useAppSelector((state) => state.contextMenu);
@@ -107,7 +98,10 @@ function Start() {
 			<UpperMenu
 				onImport={loadJSONSimulationBoard}
 				onExport={saveSimulationBoardJSON}
-				onRefresh={() => setObjectsToRender((prev) => prev)}
+				onRefresh={() => {
+					setObjectsToRender((prev) => prev);
+					console.log("refreshed");
+				}}
 			/>
 			<div className={styles.workSpace}>
 				<SimulationBoard
@@ -126,22 +120,23 @@ function Start() {
 							component:
 								selectedObject != undefined ? (
 									<PropertiesTab
-										properties={mapSimulationObjectToProperties(selectedObject)}
-										setProperties={(properties: SimulationObjectPropertiesType) => {
-											const newObject = changeSimulationObjectByProperties(
-												selectedObject,
-												properties
-											);
-											const indexOfTheOldObject = objectsToRender.findIndex(
-												(object) => object == selectedObject
-											);
-											setSelectedObject(newObject as SimulationObject);
-											setObjectsToRender((old) => {
-												old[indexOfTheOldObject] = newObject as SimulationObject;
-												console.log(old);
-												return [...old] as SimulationObject[];
-											});
-										}}
+										// properties={mapSimulationObjectToProperties(selectedObject)}
+										// setProperties={(properties: SimulationObjectPropertiesType) => {
+										// 	const newObject = changeSimulationObjectByProperties(
+										// 		selectedObject,
+										// 		properties
+										// 	);
+										// 	const indexOfTheOldObject = objectsToRender.findIndex(
+										// 		(object) => object == selectedObject
+										// 	);
+										// 	setSelectedObject(newObject as SimulationObject);
+										// 	setObjectsToRender((old) => {
+										// 		old[indexOfTheOldObject] = newObject as SimulationObject;
+										// 		return [...old] as SimulationObject[];
+										// 	});
+										// }}
+										selectedObject={selectedObject}
+										setObjectsToRender={setObjectsToRender}
 									/>
 								) : (
 									<></>
@@ -170,12 +165,23 @@ function Start() {
 							flexDirection: "column",
 						}}
 					>
-						<button onClick={handleNewObject}>Add new object</button>
-						<button>Option 2</button>
-						<button>Option 3</button>
+						<button onClick={handleNewObject}>Add Laser</button>
 					</div>
 				</div>
 			)}
+			<p
+				style={{
+					width: "50%",
+					color: "white",
+					margin: "auto",
+					textAlign: "center",
+					marginTop: "1vw",
+					marginBottom: "1vw",
+				}}
+			>
+				Instructions: To move around the infinite plane, use mouse and scroll button. Use toolbar on the right
+				to add components to Plane. Use scroll, to zoom in and out
+			</p>
 		</div>
 	);
 }

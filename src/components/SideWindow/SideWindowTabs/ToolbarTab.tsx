@@ -1,8 +1,10 @@
 import SimulationObject from "@/model/SimulationObject";
-import Laser from "@/model/SimulationObjects/Senders/Laser";
 import styles from "@/styles/Components/SideWindow/SideWindowTabs/ToolbarTab.module.css";
 import Mirror from "@/model/SimulationObjects/General/Mirror.ts";
-import Lens from "@/model/SimulationObjects/General/Lens";
+import Frog from "@/model/SimulationObjects/Senders/Frog";
+import Laser from "@/model/SimulationObjects/Senders/Laser";
+import Torch from "@/model/SimulationObjects/Senders/Torch";
+import Bulb from "@/model/SimulationObjects/Senders/Bulb";
 import Prism from "@/model/SimulationObjects/General/Prism";
 
 type Props = {
@@ -11,9 +13,9 @@ type Props = {
 
 export default function ToolbarTab({ setObjectsToRender }: Props) {
 	const categories = [
-		{ categoryName: "Light source", objects: [Laser] },
-		{ categoryName: "Mirrors", objects: [Mirror] },
-		{ categoryName: "Lenses", objects: [Lens, Prism] },
+		{ categoryName: "Light source", objects: [Laser, Torch, Bulb] },
+		{ categoryName: "Mirrors", objects: [Mirror, Prism] },
+		{ categoryName: "Frog", objects: [Frog] },
 	];
 
 	function addObject<Temp extends SimulationObject>(object: new (...args: any) => Temp): void {
@@ -28,7 +30,11 @@ export default function ToolbarTab({ setObjectsToRender }: Props) {
 						<h3>{category.categoryName}</h3>
 						<ul>
 							{category.objects.map((object) => (
-								<li onClick={() => addObject(object)} className={styles.object} key={object.name}>
+								<li style={{listType: "none"}}
+									onClick={() => addObject(object as any)}
+									className={styles.object}
+									key={object.name}
+								>
 									<img src={object.imagePath} alt={object.name} />
 									<h4>{object.name}</h4>
 								</li>
