@@ -153,18 +153,15 @@ export default function SimulationBoard({ objectsToRender, selectObject, setObje
 		for (const object of objectsToRender) {
 			if (isSender(object)) {
 				for (const particle of object.particles as Particle[]) {
-					if (!particle.hasReflectionsCalculated) {
-						particle.calculateReflections(possibleLimits, null);
-					}
-
-					for (const child of particle.childReflections) {
-						if (child.childReflections.length > 0) {
-							console.log("child has children");
-						}
-
-						drawLaser(child, renderBounds, context);
-					}
-
+					// if (!particle.hasReflectionsCalculated) {
+					// 	particle.calculateReflections(possibleLimits, null);
+					// }
+					// for (const child of particle.childReflections) {
+					// 	if (child.childReflections.length > 0) {
+					// 		console.log("child has children");
+					// 	}
+					// 	drawLaser(child, renderBounds, context);
+					// }
 					drawLaser(particle, renderBounds, context);
 				}
 			}
@@ -191,9 +188,12 @@ export default function SimulationBoard({ objectsToRender, selectObject, setObje
 		const laserStart = new Point(lowerBound, particle.at(lowerBound));
 		const laserEnd = new Point(upperBound, particle.at(upperBound));
 
+
+		context.globalCompositeOperation = "lighter";
+
 		context.beginPath();
-		context.strokeStyle = particle.color + Math.floor(particle.intensity * 255).toString(16);
-		context.lineWidth = 2 * sizeMultiplier;
+		context.strokeStyle = particle.color;
+		context.lineWidth = 0.2 * sizeMultiplier;
 		context.moveTo(...positionToCanvas(laserStart.x, laserStart.y, offset, sizeMultiplier));
 		context.lineTo(...positionToCanvas(laserEnd.x, laserEnd.y, offset, sizeMultiplier));
 		context.stroke();
@@ -202,13 +202,6 @@ export default function SimulationBoard({ objectsToRender, selectObject, setObje
 		context.textBaseline = "middle";
 		context.font = "50px Arial";
 		context.fillStyle = particle.color;
-
-		// if (particle.direction == Direction.Left) {
-		// 	context.fillText("←", ...positionToCanvas(laserEnd.x, laserEnd.y, offset, sizeMultiplier));
-		// 	return;
-		// }
-
-		// context.fillText("→", ...positionToCanvas(laserStart.x, laserStart.y, offset, sizeMultiplier));
 	};
 
 	const elementDragStartHandler = (e: React.MouseEvent<HTMLCanvasElement>) => {
