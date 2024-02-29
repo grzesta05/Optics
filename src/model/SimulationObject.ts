@@ -4,6 +4,9 @@ import { positionToCanvas } from "@/utils/canvas.ts";
 import RoundedRectangle from "@/classes/RoundedRectangle";
 
 export default abstract class SimulationObject {
+	public constructorArgs: any[] = [];
+	public readonly objectType: string = "unknown";
+
 	imagePath: string;
 	_image: HTMLImageElement;
 

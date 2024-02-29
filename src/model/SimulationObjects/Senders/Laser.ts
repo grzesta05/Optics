@@ -6,6 +6,7 @@ import { Particle } from "@/classes/Lines/Particle.ts";
 import { positionToCanvas } from "@/utils/canvas";
 
 export default class Laser extends Sender {
+	public readonly objectType = "Laser";
 	public static imagePath = "/img/laser.png";
 
 	constructor(x: number, y: number, degrees: number) {
@@ -36,6 +37,7 @@ export default class Laser extends Sender {
 		}
 
 		super(rect, "/img/laser.png", lasers);
+		this.constructorArgs = [x, y, degrees];
 	}
 
 	public recalculateParticles() {
