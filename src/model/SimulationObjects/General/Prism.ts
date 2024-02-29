@@ -4,7 +4,7 @@ import { normalizeDegrees } from "@/utils/algebra.ts";
 import Rectangle from "@/classes/Rectangle.ts";
 
 export default class Prism extends SimulationObject {
-	public static imagePath = "/img/mirror.png";
+	public static imagePath = "https://cdn-icons-png.flaticon.com/512/519/519499.png";
 	public size: number = 100;
 
 	constructor(x: number, y: number, degrees: number) {

@@ -15,14 +15,7 @@ import Bulb from "@/model/SimulationObjects/Senders/Bulb";
 
 function Start() {
 	const [selectedObject, setSelectedObject] = useState<SimulationObject>();
-	const [objectsToRender, setObjectsToRender] = useState<Array<SimulationObject>>([
-		new Frog(100, 10, 50),
-		new Frog(200, 400, 259),
-		new Frog(400, 300, 144),
-		new Laser(100, 100, 0),
-		new Torch(300, 300, 0),
-		new Bulb(500, 500, 0),
-	]);
+	const [objectsToRender, setObjectsToRender] = useState<Array<SimulationObject>>([new Laser(0, 0, 0)]);
 
 	const { offset, sizeMultiplier } = useAppSelector((state) => state.canvas);
 	const { isShown, position } = useAppSelector((state) => state.contextMenu);
@@ -165,15 +158,25 @@ function Start() {
 							flexDirection: "column",
 						}}
 					>
-						<button onClick={handleNewObject}>Add new object</button>
-						<button>Option 2</button>
-						<button>Option 3</button>
+						<button onClick={handleNewObject}>Add Laser</button>
 					</div>
 				</div>
 			)}
+			<p
+				style={{
+					width: "50%",
+					color: "white",
+					margin: "auto",
+					textAlign: "center",
+					marginTop: "1vw",
+					marginBottom: "1vw",
+				}}
+			>
+				Instructions: To move around the infinite plane, use mouse and scroll button. Use toolbar on the right
+				to add components to Plane. Use scroll, to zoom in and out
+			</p>
 		</div>
 	);
 }
 
 export default Start;
-
