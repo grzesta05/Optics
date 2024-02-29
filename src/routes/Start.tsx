@@ -7,11 +7,6 @@ import { FormEvent, useState } from "react";
 import SimulationObject from "@/model/SimulationObject.ts";
 import UpperMenu from "@/components/UpperMenu.tsx";
 import PropertiesTab from "@/components/SideWindow/SideWindowTabs/PropertiesTab";
-import {
-	SimulationObjectPropertiesType,
-	mapSimulationObjectToProperties,
-	changeSimulationObjectByProperties,
-} from "@/properties/SimulationObjectProperties/SimulationProperties";
 
 import { useAppSelector } from "@/lib/hooks";
 import ToolbarTab from "@/components/SideWindow/SideWindowTabs/ToolbarTab";
